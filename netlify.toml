@@ -1,0 +1,45 @@
+# ============================================================
+#  Netlify build config for the HARTMANN Easy Care Hub site.
+#
+#  The React + Vite app lives in `react-app/`. Netlify must
+#  install its dependencies, run `npm run build`, and publish
+#  the resulting `dist/` folder — not the source tree.
+# ============================================================
+
+[build]
+  base    = "react-app"
+  command = "npm ci && npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+  NPM_FLAGS    = "--no-audit --no-fund"
+
+# ------------------------------------------------------------
+#  SPA fallback — React Router owns every non-file path.
+#  Netlify serves real files (e.g. /downloads/*.pdf) first, so
+#  only unresolved paths fall through to index.html.
+# ------------------------------------------------------------
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200
+
+# ------------------------------------------------------------
+#  Long-term caching for hashed build assets; always-fresh HTML
+# ------------------------------------------------------------
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/downloads/*.pdf"
+  [headers.values]
+    Cache-Control   = "public, max-age=86400"
+    Content-Type    = "application/pdf"
