@@ -1,0 +1,121 @@
+/* =========================================================================
+   HARTMANN Easy Care Hub — Global styles
+   Design tokens, reset, typography, layout primitives.
+   ========================================================================= */
+
+:root {
+  --hartmann-red: #E1001A;
+  --hartmann-red-dark: #B2001A;
+  --brand-deep: #0B3D2E;
+  --brand-teal: #0E6E5A;
+  --brand-teal-soft: #E6F1EE;
+  --ink-900: #0B1F2A;
+  --ink-700: #2B3B45;
+  --ink-500: #556873;
+  --ink-400: #7E8D96;
+  --ink-300: #C3CDD3;
+  --ink-200: #E4E9EC;
+  --ink-100: #F3F5F6;
+  --paper:   #FAFAF7;
+  --white:   #FFFFFF;
+  --warning: #F6A609;
+  --danger:  #E1001A;
+  --ok:      #2F9E6B;
+
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+
+  --shadow-sm: 0 1px 2px rgba(11,31,42,.06), 0 1px 3px rgba(11,31,42,.06);
+  --shadow-md: 0 8px 24px rgba(11,31,42,.08);
+  --shadow-lg: 0 24px 60px rgba(11,31,42,.12);
+  --shadow-xl: 0 40px 100px rgba(11,31,42,.18);
+
+  --max-w: 1200px;
+  --max-w-text: 780px;
+  --font-display: "Inter", "Helvetica Neue", Arial, sans-serif;
+  --font-body:    "Inter", "Helvetica Neue", Arial, sans-serif;
+
+  --ease-out: cubic-bezier(.22, 1, .36, 1);
+  --t-fast: 160ms;
+  --t-med:  280ms;
+  --t-slow: 500ms;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  color: var(--ink-900);
+  background: var(--paper);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  font-size: 16px;
+  overflow-x: hidden;
+}
+img, svg { max-width: 100%; display: block; }
+button { font: inherit; }
+
+a { color: var(--brand-teal); text-decoration: none; transition: color var(--t-fast); }
+a:hover { text-decoration: underline; }
+
+::selection { background: rgba(225,0,26,.18); color: var(--ink-900); }
+
+/* Layout */
+.container { max-width: var(--max-w); margin: 0 auto; padding: 0 24px; }
+.section { padding: 112px 0; position: relative; }
+.section-sm { padding: 56px 0; }
+@media (max-width: 860px) {
+  .section { padding: 72px 0; }
+}
+
+/* Typography */
+h1,h2,h3,h4 {
+  font-family: var(--font-display);
+  color: var(--ink-900);
+  letter-spacing: -.022em;
+  margin: 0 0 .5em;
+}
+h1 { font-size: clamp(2.4rem, 5vw, 4.4rem); line-height: 1.02; font-weight: 800; }
+h2 { font-size: clamp(1.85rem, 3.2vw, 2.75rem); line-height: 1.1; font-weight: 700; }
+h3 { font-size: 1.25rem; line-height: 1.3; font-weight: 600; }
+h4 { font-size: 1rem; line-height: 1.35; font-weight: 600; }
+p  { margin: 0 0 1em; color: var(--ink-700); }
+
+.lead { font-size: 1.2rem; color: var(--ink-700); max-width: 62ch; line-height: 1.55; }
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: .78rem; font-weight: 600; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--brand-teal);
+  margin-bottom: 16px;
+}
+.eyebrow::before {
+  content: ""; width: 18px; height: 1px; background: var(--brand-teal);
+}
+.muted { color: var(--ink-500); }
+.center { text-align: center; }
+.hide { display: none !important; }
+
+/* Scroll-reveal util */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity var(--t-slow) var(--ease-out),
+              transform var(--t-slow) var(--ease-out);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+  .reveal { opacity: 1; transform: none; }
+}

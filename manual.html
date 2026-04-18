@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>User Manual — HARTMANN Easy Care Hub</title>
+<meta name="description" content="Complete user manual for the HARTMANN Easy Care Hub platform: navigation, roles, notifications and administration.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container nav">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">H</span>
+      <span>HARTMANN<small>Easy Care Hub</small></span>
+    </a>
+    <button class="nav-toggle" aria-label="Toggle navigation"><span></span><span></span><span></span></button>
+    <ul class="nav-links">
+      <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+      <li><a href="manual.html" class="active" data-i18n="nav.manual">User Manual</a></li>
+      <li><a href="faq.html" data-i18n="nav.faq">FAQ</a></li>
+      <li><a href="releases.html" data-i18n="nav.releases">Release Notes</a></li>
+    </ul>
+    <div class="nav-actions">
+      <div class="lang-switch">
+        <button class="lang-trigger"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><span class="current-lang">EN</span></button>
+        <ul><li><button data-lang="en" data-i18n="lang.en">English</button></li><li><button data-lang="de" data-i18n="lang.de">Deutsch</button></li><li><button data-lang="fr" data-i18n="lang.fr">Français</button></li></ul>
+      </div>
+      <a href="index.html#contact" class="btn btn-primary" data-i18n="nav.requestDemo">Request a demo</a>
+    </div>
+  </div>
+</header>
+
+<section class="page-hero">
+  <div class="container">
+    <div class="breadcrumbs">
+      <a href="index.html" data-i18n="nav.home">Home</a> ·
+      <span data-i18n="manual.breadcrumb">Documentation</span>
+    </div>
+    <span class="eyebrow" data-i18n="manual.eyebrow">User Manual · Rev. 1.4</span>
+    <h1 data-i18n="manual.title">HARTMANN Easy Care Hub — User Manual</h1>
+    <p class="lead" data-i18n="manual.intro">This manual describes how authorised staff use the HARTMANN Easy Care Hub platform.</p>
+
+    <aside class="download-card" aria-label="Manual download">
+      <div class="download-icon">
+        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z" fill="#E1001A" opacity=".1" stroke="#E1001A" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M15 2v5h5" stroke="#E1001A" stroke-width="2" stroke-linejoin="round" fill="none"/>
+          <text x="12" y="17" text-anchor="middle" font-size="6" font-weight="800" fill="#E1001A" font-family="Inter, Arial">PDF</text>
+        </svg>
+      </div>
+      <div>
+        <h3 data-i18n="download.pdf">Download the manual</h3>
+        <p class="muted" data-i18n="download.pdfSub">A typeset PDF of the full user manual — ready for print and offline reference.</p>
+        <div class="download-meta" data-i18n="download.pdfMeta">PDF · A4 · Revision 1.4 · EN</div>
+      </div>
+      <a class="btn btn-primary" href="downloads/HARTMANN_EasyCareHub_Manual_v1.4_EN.pdf" download>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span data-i18n="download.pdfCta">Download PDF</span>
+      </a>
+    </aside>
+  </div>
+</section>
+
+<div class="container manual">
+
+  <!-- ===================== TOC ===================== -->
+  <aside class="toc" aria-label="Table of contents">
+    <h4 data-i18n="manual.tocTitle">On this page</h4>
+    <ol>
+      <li><a href="#s1" data-i18n="manual.sections.s1">1. General</a>
+        <ol>
+          <li><a href="#s1-1" data-i18n="manual.sections.s11">1.1 Scope & safety information</a></li>
+          <li><a href="#s1-2" data-i18n="manual.sections.s12">1.2 Roles and permissions</a></li>
+          <li><a href="#s1-3" data-i18n="manual.sections.s13">1.3 Abbreviations and glossary</a></li>
+        </ol>
+      </li>
+      <li><a href="#s2" data-i18n="manual.sections.s2">2. Platform overview</a>
+        <ol>
+          <li><a href="#s2-1" data-i18n="manual.sections.s21">2.1 Login</a></li>
+          <li><a href="#s2-2" data-i18n="manual.sections.s22">2.2 Menu</a></li>
+          <li><a href="#s2-3" data-i18n="manual.sections.s23">2.3 Navigation bar</a></li>
+          <li><a href="#s2-4" data-i18n="manual.sections.s24">2.4 Dashboard</a></li>
+        </ol>
+      </li>
+      <li><a href="#s3" data-i18n="manual.sections.s3">3. Residents overview</a>
+        <ol>
+          <li><a href="#s3-1" data-i18n="manual.sections.s31">3.1 Browsing residents</a></li>
+          <li><a href="#s3-2" data-i18n="manual.sections.s32">3.2 Creating a new resident</a></li>
+        </ol>
+      </li>
+      <li><a href="#s4" data-i18n="manual.sections.s4">4. Resident detail page</a>
+        <ol>
+          <li><a href="#s4-1" data-i18n="manual.sections.s41">4.1 Overview tab</a></li>
+          <li><a href="#s4-2" data-i18n="manual.sections.s42">4.2 Trends tab</a></li>
+          <li><a href="#s4-3" data-i18n="manual.sections.s43">4.3 Notifications tab</a></li>
+          <li><a href="#s4-4" data-i18n="manual.sections.s44">4.4 Audit log tab</a></li>
+        </ol>
+      </li>
+      <li><a href="#s5" data-i18n="manual.sections.s5">5. Notifications</a>
+        <ol>
+          <li><a href="#s5-1" data-i18n="manual.sections.s51">5.1 Overview</a></li>
+          <li><a href="#s5-2" data-i18n="manual.sections.s52">5.2 Medical settings</a></li>
+          <li><a href="#s5-3" data-i18n="manual.sections.s53">5.3 Bed activity</a></li>
+        </ol>
+      </li>
+      <li><a href="#s6" data-i18n="manual.sections.s6">6. Devices</a></li>
+      <li><a href="#s7" data-i18n="manual.sections.s7">7. Administration</a>
+        <ol>
+          <li><a href="#s7-1" data-i18n="manual.sections.s71">7.1 Zones</a></li>
+          <li><a href="#s7-2" data-i18n="manual.sections.s72">7.2 Locations</a></li>
+          <li><a href="#s7-3" data-i18n="manual.sections.s73">7.3 Users</a></li>
+        </ol>
+      </li>
+      <li><a href="#s8" data-i18n="manual.sections.s8">8. My account</a></li>
+      <li><a href="#s9" data-i18n="manual.sections.s9">9. About & legal</a></li>
+    </ol>
+  </aside>
+
+  <!-- ===================== CONTENT ===================== -->
+  <main class="manual-content">
+
+    <!-- Section 1 -->
+    <section id="s1">
+      <h2 data-i18n="manual.sections.s1">1. General</h2>
+      <p data-i18n="manual.s1.lead"></p>
+
+      <div id="s1-1">
+        <h3 data-i18n="manual.s1.scope.title">Scope and intended audience</h3>
+        <p data-i18n="manual.s1.scope.body"></p>
+
+        <h3 data-i18n="manual.s1.safety.title">Important safety and usage information</h3>
+        <ul data-i18n-list="manual.s1.safety.points"></ul>
+        <div class="warn"><strong>⚠</strong><span data-i18n="manual.s1.safety.warn"></span></div>
+      </div>
+
+      <div id="s1-2">
+        <h3 data-i18n="manual.s1.roles.title">Roles and permissions</h3>
+        <p data-i18n="manual.s1.roles.lead"></p>
+        <table>
+          <thead data-i18n-heads="manual.s1.roles.tHead"><tr><th scope="col">Capability</th><th scope="col" class="center">System Owner</th><th scope="col" class="center">Administrator</th><th scope="col" class="center">User</th></tr></thead>
+          <tbody data-i18n-rows="manual.s1.roles.rows"></tbody>
+        </table>
+        <p class="muted" data-i18n="manual.s1.roles.key"></p>
+      </div>
+
+      <div id="s1-3">
+        <h3 data-i18n="manual.s1.abbr.title">Abbreviations & glossary</h3>
+        <table>
+          <thead><tr><th scope="col">Term</th><th scope="col">Definition</th></tr></thead>
+          <tbody data-i18n-rows="manual.s1.abbr.rows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Section 2 -->
+    <section id="s2">
+      <h2 data-i18n="manual.sections.s2">2. Platform overview</h2>
+
+      <div id="s2-1">
+        <h3 data-i18n="manual.s2.login.title">Login</h3>
+        <p data-i18n="manual.s2.login.body"></p>
+        <ol data-i18n-list="manual.s2.login.steps"></ol>
+
+        <figure>
+          <div class="ui-mock">
+            <div class="bar"><span></span><span></span><span></span></div>
+            <div class="mock-row"><span class="k">Email</span><span class="v">nurse@facility.care</span></div>
+            <div class="mock-row"><span class="k">Password</span><span class="v">••••••••</span></div>
+            <div class="mock-row"><span class="k">Remember me</span><span class="v">☑</span></div>
+            <div class="mock-row"><span class="k">Forgot password?</span><span class="v">→</span></div>
+          </div>
+          <figcaption>Fig. 2.1 — Login screen</figcaption>
+        </figure>
+      </div>
+
+      <div id="s2-2">
+        <h3 data-i18n="manual.s2.menu.title">Menu</h3>
+        <p data-i18n="manual.s2.menu.body"></p>
+        <ul data-i18n-list="manual.s2.menu.items"></ul>
+      </div>
+
+      <div id="s2-3">
+        <h3 data-i18n="manual.s2.navbar.title">Navigation bar</h3>
+        <p data-i18n="manual.s2.navbar.body"></p>
+        <ul data-i18n-list="manual.s2.navbar.items"></ul>
+      </div>
+
+      <div id="s2-4">
+        <h3 data-i18n="manual.s2.dash.title">Dashboard</h3>
+        <p data-i18n="manual.s2.dash.lead"></p>
+        <h4>Zones</h4><p data-i18n="manual.s2.dash.zones"></p>
+        <h4>View toggle</h4><p data-i18n="manual.s2.dash.views"></p>
+        <h4>Visual status filter</h4><p data-i18n="manual.s2.dash.filter"></p>
+        <h4>Search</h4><p data-i18n="manual.s2.dash.search"></p>
+        <h4>Status colour</h4><p data-i18n="manual.s2.dash.color"></p>
+        <h4 data-i18n="manual.s2.dash.sideTitle">Notification sidebar</h4>
+        <p data-i18n="manual.s2.dash.sideBody"></p>
+
+        <figure>
+          <div class="ui-mock">
+            <div class="bar"><span></span><span></span><span></span></div>
+            <div class="mock-row"><span class="k">Zone A · Room 204</span><span class="v">In bed · 68 bpm · 14 brpm</span></div>
+            <div class="mock-row"><span class="k">Zone A · Room 206</span><span class="v">Asleep · 62 bpm · 12 brpm</span></div>
+            <div class="mock-row"><span class="k">Zone B · Room 302</span><span class="v">Out of bed · 12 min</span></div>
+            <div class="mock-row"><span class="k">Zone B · Room 304</span><span class="v">Disconnected</span></div>
+          </div>
+          <figcaption>Fig. 2.2 — Dashboard tile view</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- Section 3 -->
+    <section id="s3">
+      <h2 data-i18n="manual.sections.s3">3. Residents overview</h2>
+      <p data-i18n="manual.s3.lead"></p>
+      <ul data-i18n-list="manual.s3.columns"></ul>
+
+      <div id="s3-1">
+        <h3 data-i18n="manual.s3.searchTitle">Finding a resident</h3>
+        <p data-i18n="manual.s3.searchBody"></p>
+      </div>
+
+      <div id="s3-2">
+        <h3 data-i18n="manual.s3.createTitle">Creating a new resident</h3>
+        <p data-i18n="manual.s3.createBody"></p>
+        <ol data-i18n-list="manual.s3.createFields"></ol>
+        <div class="note"><strong>ℹ</strong><span data-i18n="manual.s3.createConflict"></span></div>
+        <p data-i18n="manual.s3.createManual"></p>
+        <p data-i18n="manual.s3.createSave"></p>
+      </div>
+    </section>
+
+    <!-- Section 4 -->
+    <section id="s4">
+      <h2 data-i18n="manual.sections.s4">4. Resident detail page</h2>
+      <p data-i18n="manual.s4.lead"></p>
+
+      <div id="s4-1">
+        <h3 data-i18n="manual.s4.overview.title">Overview tab</h3>
+        <p data-i18n="manual.s4.overview.body"></p>
+        <h4>Details</h4><ul data-i18n-list="manual.s4.overview.details"></ul>
+        <h4>Individual notifications</h4><ul data-i18n-list="manual.s4.overview.indiv"></ul>
+      </div>
+
+      <div id="s4-2">
+        <h3 data-i18n="manual.s4.trends.title">Trends tab</h3>
+        <p data-i18n="manual.s4.trends.body"></p>
+        <div class="tip"><strong>Tip</strong><span data-i18n="manual.s4.trends.missing"></span></div>
+      </div>
+
+      <div id="s4-3">
+        <h3 data-i18n="manual.s4.notif.title">Notifications tab</h3>
+        <p data-i18n="manual.s4.notif.body"></p>
+        <h4>Presets</h4><ul data-i18n-list="manual.s4.notif.presets"></ul>
+        <p data-i18n="manual.s4.notif.review"></p>
+        <p data-i18n="manual.s4.notif.filter"></p>
+      </div>
+
+      <div id="s4-4">
+        <h3 data-i18n="manual.s4.audit.title">Audit Log tab</h3>
+        <p data-i18n="manual.s4.audit.body"></p>
+      </div>
+    </section>
+
+    <!-- Section 5 -->
+    <section id="s5">
+      <h2 data-i18n="manual.sections.s5">5. Notifications</h2>
+      <p data-i18n="manual.s5.lead"></p>
+      <ul data-i18n-list="manual.s5.tabs"></ul>
+
+      <div id="s5-1">
+        <h3 data-i18n="manual.s5.overview.title">Overview tab</h3>
+        <p data-i18n="manual.s5.overview.body"></p>
+      </div>
+
+      <div id="s5-2">
+        <h3 data-i18n="manual.s5.medical.title">Medical settings tab</h3>
+        <p data-i18n="manual.s5.medical.body"></p>
+        <ul data-i18n-groups="manual.s5.medical.types"></ul>
+        <p data-i18n="manual.s5.medical.defaults"></p>
+      </div>
+
+      <div id="s5-3">
+        <h3 data-i18n="manual.s5.bed.title">Bed activity tab</h3>
+        <p data-i18n="manual.s5.bed.body"></p>
+        <ol data-i18n-list="manual.s5.bed.rules"></ol>
+        <p data-i18n="manual.s5.bed.bedtime"></p>
+      </div>
+    </section>
+
+    <!-- Section 6 -->
+    <section id="s6">
+      <h2 data-i18n="manual.sections.s6">6. Devices</h2>
+      <p data-i18n="manual.s6.lead"></p>
+      <ul data-i18n-list="manual.s6.cols"></ul>
+      <p data-i18n="manual.s6.detail"></p>
+    </section>
+
+    <!-- Section 7 -->
+    <section id="s7">
+      <h2 data-i18n="manual.sections.s7">7. Administration</h2>
+      <p data-i18n="manual.s7.lead"></p>
+
+      <div id="s7-1">
+        <h3 data-i18n="manual.s7.zones.title">Zones tab</h3>
+        <p data-i18n="manual.s7.zones.body"></p>
+      </div>
+
+      <div id="s7-2">
+        <h3 data-i18n="manual.s7.locations.title">Locations tab</h3>
+        <p data-i18n="manual.s7.locations.body"></p>
+      </div>
+
+      <div id="s7-3">
+        <h3 data-i18n="manual.s7.users.title">Users tab</h3>
+        <p data-i18n="manual.s7.users.body"></p>
+      </div>
+    </section>
+
+    <!-- Section 8 -->
+    <section id="s8">
+      <h2 data-i18n="manual.sections.s8">8. My account</h2>
+      <p data-i18n="manual.s8.lead"></p>
+      <ul data-i18n-list="manual.s8.items"></ul>
+      <p data-i18n="manual.s8.save"></p>
+    </section>
+
+    <!-- Section 9 -->
+    <section id="s9">
+      <h2 data-i18n="manual.sections.s9">9. About & legal</h2>
+      <p data-i18n="manual.s9.lead"></p>
+      <ul data-i18n-groups="manual.s9.items"></ul>
+      <p class="muted" data-i18n="manual.s9.faqCta"></p>
+
+      <div class="note" style="margin-top:32px;">
+        <strong>PAUL HARTMANN AG</strong> — Paul-Hartmann-Straße 12, 89522 Heidenheim, Germany · info@hartmann.info · +49 7321 360
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <a href="index.html" class="brand"><span class="brand-mark">H</span><span>HARTMANN<small>Easy Care Hub</small></span></a>
+        <p class="muted" style="max-width:40ch;margin-top:14px;" data-i18n="footer.tagline"></p>
+      </div>
+      <div class="footer-col"><h4 data-i18n="footer.product">Product</h4><ul>
+        <li><a href="index.html#features">Overview</a></li>
+        <li><a href="index.html#how">How it works</a></li>
+        <li><a href="faq.html#security">Security</a></li>
+      </ul></div>
+      <div class="footer-col"><h4 data-i18n="footer.resources">Resources</h4><ul>
+        <li><a href="manual.html">User manual</a></li>
+        <li><a href="downloads/HARTMANN_EasyCareHub_Manual_v1.4_EN.pdf" download data-i18n="download.pdfCta">Download PDF</a></li>
+        <li><a href="releases.html">Release notes</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+      </ul></div>
+      <div class="footer-col"><h4 data-i18n="footer.company">Company</h4><ul>
+        <li><a href="https://www.hartmann.info" target="_blank" rel="noopener">About HARTMANN</a></li>
+        <li><a href="mailto:support.digital@hartmann.info">Contact</a></li>
+      </ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span data-i18n="footer.copyright">© 2026 PAUL HARTMANN AG.</span>
+      <span>Paul-Hartmann-Straße 12 · 89522 Heidenheim · Germany</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>

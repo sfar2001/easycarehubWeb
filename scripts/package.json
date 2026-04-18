@@ -1,0 +1,12 @@
+{
+  "name": "ech-pdf-generator",
+  "private": true,
+  "type": "module",
+  "version": "1.4.0",
+  "scripts": {
+    "build": "node generate-manual-pdf.mjs"
+  },
+  "dependencies": {
+    "pdfkit": "^0.15.0"
+  }
+}
