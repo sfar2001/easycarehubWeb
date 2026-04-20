@@ -9,7 +9,7 @@ import "./styles/index.css";
 import "./styles/components.css";
 import "./styles/pages.css";
 
-const USERBACK_TOKEN = "A-fgRiJsprZWX8ZBzCIunxpTETW";
+const USERBACK_TOKEN = "foPnrQ5Yszn9sXCf5Pn2faxhg3p9Np57343";
 
 const container = document.getElementById("root");
 if (!container) throw new Error("#root not found");
