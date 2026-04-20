@@ -2,6 +2,9 @@
    Minimal Userback REST client.
    Docs: https://api.userback.io  (v1 API)
    Auth header format is just the bare token, no "Bearer" prefix.
+
+   Defensive: an empty response body (204, or bare 200 with 0 bytes) is
+   treated as "no feedback" rather than blowing up on JSON.parse("").
    ===================================================================== */
 
 const BASE = "https://api.userback.io/api/v1";
@@ -15,25 +18,47 @@ export async function fetchNewFeedback(processedIds, limit = 0) {
   const token = process.env.USERBACK_TOKEN;
   if (!token) throw new Error("USERBACK_TOKEN is not set");
 
-  const res = await fetch(`${BASE}/feedback?per_page=100`, {
+  const url = `${BASE}/feedback?per_page=100`;
+  console.log(`→ GET ${url}`);
+
+  const res = await fetch(url, {
     headers: {
       Authorization: token,
       Accept: "application/json",
     },
   });
 
+  console.log(`  status: ${res.status} ${res.statusText}`);
+  const text = await res.text();
+
   if (!res.ok) {
-    const body = await res.text();
-    throw new Error(`Userback API ${res.status}: ${body.slice(0, 400)}`);
+    throw new Error(
+      `Userback API ${res.status} ${res.statusText}: ${text.slice(0, 400) || "(empty body)"}`
+    );
   }
 
-  const payload = await res.json();
-  // Userback's response envelope varies; try common shapes.
+  if (!text || !text.trim()) {
+    console.log("  body: (empty) — treating as no feedback");
+    return [];
+  }
+
+  let payload;
+  try {
+    payload = JSON.parse(text);
+  } catch (err) {
+    throw new Error(
+      `Userback returned non-JSON body (${text.length} bytes). First 200 chars: ${text.slice(0, 200)}`
+    );
+  }
+
+  // Response envelope varies; try common shapes.
   const items =
     Array.isArray(payload) ? payload :
-    Array.isArray(payload.results) ? payload.results :
-    Array.isArray(payload.data)    ? payload.data :
-    Array.isArray(payload.feedback)? payload.feedback : [];
+    Array.isArray(payload.results)  ? payload.results :
+    Array.isArray(payload.data)     ? payload.data :
+    Array.isArray(payload.feedback) ? payload.feedback : [];
+
+  console.log(`  items returned: ${items.length}`);
 
   const processed = new Set(processedIds.map(String));
   const fresh = items
