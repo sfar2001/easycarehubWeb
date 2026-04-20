@@ -8,15 +8,15 @@
    ===================================================================== */
 
 const BASE = "https://rest.userback.io/1.0";
-const CLIENT_VERSION = 3; // bump on every change so CI logs prove which code ran
+const CLIENT_VERSION = 4; // bump on every change so CI logs prove which code ran
 console.log(`[userback client v${CLIENT_VERSION}] base=${BASE}`);
 
-// Userback's REST auth varies by plan/region. We try these in order on 401.
+// Per Userback docs (https://docs.userback.io/reference/authentication):
+//   authorization: Bearer <API TOKEN>
+// Note: REST API access requires a Userback Premium account. Non-premium
+// accounts authenticate (token is valid) but will receive 403 Forbidden.
 const AUTH_HEADERS = [
-  (t) => ({ Authorization: t }),
   (t) => ({ Authorization: `Bearer ${t}` }),
-  (t) => ({ Authorization: `Token ${t}` }),
-  (t) => ({ "X-API-Key": t }),
 ];
 
 // Response envelopes observed in the wild, in order of preference.

@@ -13,6 +13,16 @@ Optional input `limit` caps the number of items processed per run (default 5).
 Nothing runs on a timer. If you later want a schedule, add a `schedule:` block
 to [`.github/workflows/feedback-to-pr.yml`](../../.github/workflows/feedback-to-pr.yml).
 
+## Requirements
+
+- **Userback Premium account** — the REST API is gated behind Userback's
+  Premium tier. Non-Premium accounts authenticate fine but get `403 Forbidden`
+  on `/feedback`. See <https://docs.userback.io/reference/authentication>:
+  _"Production access requires a Userback Premium account along with access
+  to an account with Admin level permissions."_
+- **Anthropic API key** — any paid Claude API account.
+- **GitHub repo** with Actions enabled (every public repo has this free).
+
 ## One-time setup
 
 Add two secrets at **GitHub → Settings → Secrets and variables → Actions**:
