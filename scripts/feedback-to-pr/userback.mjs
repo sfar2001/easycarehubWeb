@@ -8,6 +8,8 @@
    ===================================================================== */
 
 const BASE = "https://rest.userback.io/1.0";
+const CLIENT_VERSION = 2; // bump on every change so CI logs prove which code ran
+console.log(`[userback client v${CLIENT_VERSION}] base=${BASE}`);
 
 // Response envelopes observed in the wild, in order of preference.
 const ENVELOPE_KEYS = [
