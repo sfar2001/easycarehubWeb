@@ -8,8 +8,16 @@
    ===================================================================== */
 
 const BASE = "https://rest.userback.io/1.0";
-const CLIENT_VERSION = 2; // bump on every change so CI logs prove which code ran
+const CLIENT_VERSION = 3; // bump on every change so CI logs prove which code ran
 console.log(`[userback client v${CLIENT_VERSION}] base=${BASE}`);
+
+// Userback's REST auth varies by plan/region. We try these in order on 401.
+const AUTH_HEADERS = [
+  (t) => ({ Authorization: t }),
+  (t) => ({ Authorization: `Bearer ${t}` }),
+  (t) => ({ Authorization: `Token ${t}` }),
+  (t) => ({ "X-API-Key": t }),
+];
 
 // Response envelopes observed in the wild, in order of preference.
 const ENVELOPE_KEYS = [
@@ -48,33 +56,63 @@ async function request(url) {
   const token = process.env.USERBACK_TOKEN;
   if (!token) throw new Error("USERBACK_TOKEN is not set");
 
+  logTokenDiagnostics(token);
   console.log(`→ GET ${url}`);
-  const res = await fetch(url, {
-    headers: {
-      Authorization: token,
-      Accept: "application/json",
-    },
-  });
 
-  console.log(`  status: ${res.status} ${res.statusText}`);
+  let lastError;
+  for (let i = 0; i < AUTH_HEADERS.length; i++) {
+    const outcome = await tryRequest(url, token, AUTH_HEADERS[i], i);
+    if (outcome.kind === "ok") return outcome.payload;
+    if (outcome.kind === "fatal") throw new Error(outcome.message);
+    lastError = outcome.message; // keep iterating (auth error)
+  }
+
+  throw new Error(`All auth header formats rejected by Userback. Last error: ${lastError}`);
+}
+
+/** One attempt: ok | retry | fatal. Wraps the fetch + parse for a single header scheme. */
+async function tryRequest(url, token, headerFn, attemptIdx) {
+  const headers = { ...headerFn(token), Accept: "application/json" };
+  const authKey = Object.keys(headers).find((k) => k !== "Accept");
+  const scheme = describeAuth(headers[authKey], token);
+  console.log(`  try #${attemptIdx + 1}: header ${authKey}: ${scheme}`);
+
+  const res = await fetch(url, { headers });
+  console.log(`    status: ${res.status} ${res.statusText}`);
   const text = await res.text();
 
-  if (!res.ok) {
-    throw new Error(
-      `Userback API ${res.status} ${res.statusText}: ${text.slice(0, 400) || "(empty body)"}`
-    );
-  }
+  if (res.ok) return { kind: "ok", payload: parseBody(text) };
+
+  const msg = `Userback API ${res.status} ${res.statusText}: ${text.slice(0, 200) || "(empty body)"}`;
+  if (res.status === 401 || res.status === 403) return { kind: "retry", message: msg };
+  return { kind: "fatal", message: msg };
+}
+
+function parseBody(text) {
   if (!text?.trim()) {
-    console.log("  body: (empty) — treating as no feedback");
+    console.log("    body: (empty) — treating as no feedback");
     return null;
   }
-
   try {
     return JSON.parse(text);
   } catch {
     throw new Error(
       `Userback returned non-JSON body (${text.length} bytes). First 200 chars: ${text.slice(0, 200)}`
     );
+  }
+}
+
+function describeAuth(headerValue, token) {
+  // Show the scheme (Bearer/Token/bare) without leaking the token.
+  if (headerValue === token) return "<token>";
+  const firstSpace = headerValue.indexOf(" ");
+  return firstSpace > 0 ? `${headerValue.slice(0, firstSpace)} <token>` : "<token>";
+}
+
+function logTokenDiagnostics(token) {
+  console.log(`  token length=${token.length}, ends …${token.slice(-4)}`);
+  if (/\s/.test(token)) {
+    console.warn("  ⚠ token contains whitespace — likely a bad secret paste");
   }
 }
 
