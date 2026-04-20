@@ -89,6 +89,18 @@ footer Resources column.
 - **Languages** — English, Deutsch, Français (persisted per user via `localStorage`)
 - **Design** — Hartmann red `#E1001A` accent over deep clinical teal `#0B3D2E`
 
+## Feedback → Claude → Draft PR bot
+
+Manual-trigger pipeline that turns Userback feedback into review-ready pull
+requests. See [scripts/feedback-to-pr/README.md](scripts/feedback-to-pr/README.md).
+
+- Trigger at GitHub → Actions → **Feedback → PR** → Run workflow.
+- Fetches new Userback feedback, sends each to Claude Sonnet 4.6 with
+  sandboxed file-system tools, commits the proposed change to a new branch,
+  and opens a **draft** pull request.
+- Netlify only redeploys after you merge the PR — you are always the
+  approval gate.
+
 ## Notes
 
 - The *Easy Care Hub* platform itself is not a medical device under EU MDR

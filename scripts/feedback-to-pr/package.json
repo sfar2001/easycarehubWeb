@@ -1,0 +1,14 @@
+{
+  "name": "ech-feedback-to-pr",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Userback → Claude → draft-PR bot for HARTMANN Easy Care Hub",
+  "scripts": {
+    "start": "node index.mjs",
+    "dry-run": "DRY_RUN=1 node index.mjs"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.1"
+  }
+}
