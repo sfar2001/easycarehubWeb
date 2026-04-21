@@ -89,17 +89,20 @@ footer Resources column.
 - **Languages** — English, Deutsch, Français (persisted per user via `localStorage`)
 - **Design** — Hartmann red `#E1001A` accent over deep clinical teal `#0B3D2E`
 
-## Feedback → Claude → Draft PR bot
+## Error tracking — GlitchTip
 
-Manual-trigger pipeline that turns Userback feedback into review-ready pull
-requests. See [scripts/feedback-to-pr/README.md](scripts/feedback-to-pr/README.md).
+The React app reports unhandled exceptions to GlitchTip (self-hosted,
+Sentry-compatible) via `@sentry/react`. Initialised in
+[react-app/src/main.tsx](react-app/src/main.tsx) before the React tree mounts.
 
-- Trigger at GitHub → Actions → **Feedback → PR** → Run workflow.
-- Fetches new Userback feedback, sends each to Claude Sonnet 4.6 with
-  sandboxed file-system tools, commits the proposed change to a new branch,
-  and opens a **draft** pull request.
-- Netlify only redeploys after you merge the PR — you are always the
-  approval gate.
+- The whole app is wrapped in `<Sentry.ErrorBoundary>` with a custom
+  [ErrorFallback](react-app/src/components/ErrorFallback.tsx) that lets users
+  reload or contact support. Errors in the fallback subtree are automatically
+  captured and sent to GlitchTip.
+- `tracesSampleRate: 0.01` (1 % of transactions) — adjust in `main.tsx`.
+- `environment` is taken from Vite's `import.meta.env.MODE`, so dev vs prod
+  events are separated in the GlitchTip dashboard.
+- The DSN is a public identifier (safe to commit); no secret is required.
 
 ## Notes
 
