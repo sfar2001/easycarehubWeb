@@ -1,0 +1,64 @@
+# ============================================================
+#  Tally → Claude → Draft PR
+#
+#  Fetches new submissions from the EasyCareHub Tally form, asks
+#  Claude (Sonnet 4.6) to propose a code change, and opens a DRAFT
+#  pull request for each. Your PR merge is the gate before Netlify
+#  redeploys.
+#
+#  Trigger:  manual only — Actions tab → "Feedback → PR" → Run.
+#  Secrets:  TALLY_API_KEY, ANTHROPIC_API_KEY
+# ============================================================
+
+name: Feedback → PR
+
+on:
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: "Max submissions to process this run (0 = all)"
+        required: false
+        default: "5"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: feedback-to-pr
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install script dependencies
+        working-directory: scripts/feedback-to-pr
+        run: npm install --no-audit --no-fund
+
+      - name: Configure git identity
+        run: |
+          git config user.name  "easycarehub-bot"
+          git config user.email "easycarehub-bot@users.noreply.github.com"
+
+      - name: Run feedback bot
+        working-directory: scripts/feedback-to-pr
+        env:
+          TALLY_API_KEY:      ${{ secrets.TALLY_API_KEY }}
+          ANTHROPIC_API_KEY:  ${{ secrets.ANTHROPIC_API_KEY }}
+          GH_TOKEN:           ${{ secrets.GITHUB_TOKEN }}
+          REPO:               ${{ github.repository }}
+          LIMIT:              ${{ inputs.limit }}
+          TALLY_FORM_ID:      "WOp6Qv"
+        run: node index.mjs

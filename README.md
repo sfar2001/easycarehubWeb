@@ -89,6 +89,27 @@ footer Resources column.
 - **Languages** — English, Deutsch, Français (persisted per user via `localStorage`)
 - **Design** — Hartmann red `#E1001A` accent over deep clinical teal `#0B3D2E`
 
+## Feedback collection — Tally
+
+A red floating "Feedback" button on every page opens a Tally form
+(ID `WOp6Qv`) in a modal overlay. Submissions land in Tally's dashboard.
+
+- React: [FeedbackWidget.tsx](react-app/src/components/FeedbackWidget.tsx)
+- Static: [assets/js/feedback.js](assets/js/feedback.js)
+- Tally embed is lazy-loaded (only on first click)
+- The current page URL is sent as a hidden field so you know which page the report came from
+
+## Feedback → Claude → Draft PR bot
+
+Manual-trigger pipeline that turns Tally submissions into review-ready pull
+requests. See [scripts/feedback-to-pr/README.md](scripts/feedback-to-pr/README.md).
+
+- Trigger at GitHub → Actions → **Feedback → PR** → Run workflow
+- Fetches new Tally submissions via REST API, sends each to Claude Sonnet 4.6
+  with sandboxed file-system tools, commits the proposed change to a new
+  branch, and opens a **draft** pull request
+- Netlify redeploys only after you merge the PR
+
 ## Error tracking — GlitchTip
 
 The React app reports unhandled exceptions to GlitchTip (self-hosted,
