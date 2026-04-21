@@ -9,9 +9,19 @@ import fs from "node:fs";
 import path from "node:path";
 import Anthropic from "@anthropic-ai/sdk";
 
-const MODEL = "claude-sonnet-4-6";
-const MAX_TURNS = 12;
+// Provider / model are env-configurable so you can point this at OpenRouter
+// (or any other Anthropic-SDK-compatible gateway) without a code change.
+//   LLM_BASE_URL    default: Anthropic's native endpoint
+//   LLM_MODEL       default: claude-sonnet-4-6
+//   LLM_API_KEY_ENV default: ANTHROPIC_API_KEY
+const MODEL            = process.env.LLM_MODEL    || "claude-sonnet-4-6";
+const BASE_URL         = process.env.LLM_BASE_URL || undefined;
+const API_KEY_ENV      = process.env.LLM_API_KEY_ENV || "ANTHROPIC_API_KEY";
+const MAX_TURNS        = 12;
 const MAX_OUTPUT_TOKENS = 8000;
+
+const driverSuffix = BASE_URL ? `  via ${BASE_URL}` : "";
+console.log(`[claude driver] model=${MODEL}${driverSuffix}`);
 
 // ---- File permission policy ----------------------------------------------
 
@@ -50,7 +60,7 @@ function normRel(root, p) {
   if (!abs.startsWith(root + path.sep) && abs !== root) {
     throw new Error("path escapes repo: " + p);
   }
-  return path.relative(root, abs).replace(/\\/g, "/");
+  return path.relative(root, abs).replaceAll("\\", "/");
 }
 function canWrite(rel) {
   if (DENY.some((r) => r.test(rel))) return false;
@@ -141,12 +151,12 @@ function walk(absDir, root, acc = []) {
   if (!fs.existsSync(absDir)) return acc;
   const st = fs.statSync(absDir);
   if (st.isFile()) {
-    const rel = path.relative(root, absDir).replace(/\\/g, "/");
+    const rel = path.relative(root, absDir).replaceAll("\\", "/");
     if (canRead(rel)) acc.push(rel);
     return acc;
   }
   if (!st.isDirectory()) return acc;
-  const rel = path.relative(root, absDir).replace(/\\/g, "/");
+  const rel = path.relative(root, absDir).replaceAll("\\", "/");
   if (rel.startsWith("node_modules") || rel.startsWith(".git") || rel === "dist" || rel === "react-app/dist") return acc;
   for (const name of fs.readdirSync(absDir)) {
     walk(path.join(absDir, name), root, acc);
@@ -180,10 +190,79 @@ function toolWriteFile(root, { path: p, content }) {
   return `wrote ${Buffer.byteLength(content, "utf8")} bytes to ${rel}`;
 }
 
+// ---- Tool-call dispatcher ------------------------------------------------
+
+/**
+ * Execute every tool_use block in an assistant turn and produce the matching
+ * tool_result messages. Returns { toolResults, doneCalled, doneResult }.
+ */
+function runToolBlocks(blocks, repoRoot, filesChanged) {
+  const toolResults = [];
+  let doneCalled = false;
+  let doneResult = null;
+
+  for (const block of blocks) {
+    if (block.type !== "tool_use") continue;
+    try {
+      const outcome = dispatchTool(block, repoRoot, filesChanged);
+      if (outcome.done) { doneCalled = true; doneResult = outcome.result; }
+      toolResults.push({
+        type: "tool_result",
+        tool_use_id: block.id,
+        content: outcome.content,
+      });
+    } catch (err) {
+      toolResults.push({
+        type: "tool_result",
+        tool_use_id: block.id,
+        content: `ERROR: ${err.message}`,
+        is_error: true,
+      });
+    }
+  }
+
+  return { toolResults, doneCalled, doneResult };
+}
+
+/** Run one tool_use block. Returns { content, done?, result? }. */
+function dispatchTool(block, repoRoot, filesChanged) {
+  switch (block.name) {
+    case "list_files":
+      return { content: toolListFiles(repoRoot, block.input) };
+    case "read_file":
+      return { content: toolReadFile(repoRoot, block.input) };
+    case "write_file": {
+      const msg = toolWriteFile(repoRoot, block.input);
+      filesChanged.add(normRel(repoRoot, block.input.path));
+      return { content: msg };
+    }
+    case "done":
+      return {
+        content: "done recorded",
+        done: true,
+        result: {
+          summary: block.input.summary || "",
+          filesChanged: Array.from(new Set([
+            ...(block.input.files_changed || []),
+            ...filesChanged,
+          ])),
+          shouldOpenPr: !!block.input.should_open_pr,
+        },
+      };
+    default:
+      return { content: `ERROR: unknown tool ${block.name}` };
+  }
+}
+
 // ---- Main exported function ----------------------------------------------
 
 export async function analyseAndFix(feedback, repoRoot) {
-  const client = new Anthropic();
+  const apiKey = process.env[API_KEY_ENV];
+  if (!apiKey) throw new Error(`${API_KEY_ENV} is not set`);
+  const client = new Anthropic({
+    apiKey,
+    ...(BASE_URL ? { baseURL: BASE_URL } : {}),
+  });
 
   const messages = [{ role: "user", content: [{ type: "text", text: buildUserPrompt(feedback) }] }];
 
@@ -210,48 +289,13 @@ export async function analyseAndFix(feedback, repoRoot) {
       break;
     }
 
-    const toolResults = [];
-    let doneCalled = false;
-
-    for (const block of resp.content) {
-      if (block.type !== "tool_use") continue;
-      try {
-        let content;
-        switch (block.name) {
-          case "list_files":  content = toolListFiles(repoRoot, block.input); break;
-          case "read_file":   content = toolReadFile(repoRoot, block.input); break;
-          case "write_file":
-            content = toolWriteFile(repoRoot, block.input);
-            filesChanged.add(normRel(repoRoot, block.input.path));
-            break;
-          case "done":
-            result = {
-              summary: block.input.summary || "",
-              filesChanged: Array.from(new Set([...(block.input.files_changed || []), ...filesChanged])),
-              shouldOpenPr: !!block.input.should_open_pr,
-            };
-            doneCalled = true;
-            content = "done recorded";
-            break;
-          default:
-            content = `ERROR: unknown tool ${block.name}`;
-        }
-        toolResults.push({
-          type: "tool_result",
-          tool_use_id: block.id,
-          content: typeof content === "string" ? content : JSON.stringify(content),
-        });
-      } catch (err) {
-        toolResults.push({
-          type: "tool_result",
-          tool_use_id: block.id,
-          content: `ERROR: ${err.message}`,
-          is_error: true,
-        });
-      }
-    }
+    const { toolResults, doneCalled, doneResult } =
+      runToolBlocks(resp.content, repoRoot, filesChanged);
     messages.push({ role: "user", content: toolResults });
-    if (doneCalled) break;
+    if (doneCalled) {
+      if (doneResult) result = doneResult;
+      break;
+    }
   }
 
   return result;

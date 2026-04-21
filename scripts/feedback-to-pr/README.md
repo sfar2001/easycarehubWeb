@@ -12,15 +12,33 @@ items per run (default 5). No schedule — runs only when you click.
 
 ## Secrets required
 
-Add both at **GitHub → Settings → Secrets and variables → Actions**:
+At **GitHub → Settings → Secrets and variables → Actions**:
 
-| Secret               | Where it comes from                                           |
-| -------------------- | ------------------------------------------------------------- |
-| `TALLY_API_KEY`      | Tally → <https://tally.so/settings/api-keys> → Generate       |
-| `ANTHROPIC_API_KEY`  | <https://console.anthropic.com/> → API Keys                   |
+| Secret               | Where it comes from                                      |
+| -------------------- | -------------------------------------------------------- |
+| `TALLY_API_KEY`      | Tally → <https://tally.so/settings/api-keys> → Generate  |
+| `ANTHROPIC_API_KEY`  | <https://console.anthropic.com/> (default LLM provider)  |
+| `OPENROUTER_API_KEY` | Optional — <https://openrouter.ai/keys>                  |
 
 `GITHUB_TOKEN` is supplied automatically. Form ID `WOp6Qv` is hard-coded
 in the workflow env (`TALLY_FORM_ID`) — change there if you ever swap forms.
+
+## Picking an LLM (free vs paid)
+
+The bot uses **Claude Sonnet 4.6** by default. To use a different provider
+or a free model (e.g. Hermes 3 405B on OpenRouter), set these as **Repository
+variables** (Settings → Secrets and variables → Actions → Variables tab):
+
+| Variable          | Value for default Claude        | Value for OpenRouter free Hermes                           |
+| ----------------- | ------------------------------- | ---------------------------------------------------------- |
+| `LLM_BASE_URL`    | _(leave blank)_                 | `https://openrouter.ai/api/v1`                             |
+| `LLM_MODEL`       | _(leave blank → sonnet-4-6)_    | `nousresearch/hermes-3-llama-3.1-405b:free`                |
+| `LLM_API_KEY_ENV` | _(leave blank → ANTHROPIC)_     | `OPENROUTER_API_KEY`                                       |
+
+OpenRouter's Anthropic-compatible endpoint means no code changes — just
+these three variables. Some OpenRouter models speak tool-use less reliably
+than Claude native, so if Hermes misbehaves, try a paid OpenRouter model
+like `anthropic/claude-haiku-4-5` for ~⅓ the Anthropic-direct price.
 
 ## What Claude can / cannot do
 
