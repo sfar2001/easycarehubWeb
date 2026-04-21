@@ -31,7 +31,7 @@ variables** (Settings → Secrets and variables → Actions → Variables tab):
 
 | Variable          | Value for default Claude        | Value for OpenRouter free Hermes                           |
 | ----------------- | ------------------------------- | ---------------------------------------------------------- |
-| `LLM_BASE_URL`    | _(leave blank)_                 | `https://openrouter.ai/api/v1`                             |
+| `LLM_BASE_URL`    | _(leave blank)_                 | `https://openrouter.ai/api` _(no `/v1` — SDK adds it)_     |
 | `LLM_MODEL`       | _(leave blank → sonnet-4-6)_    | `nousresearch/hermes-3-llama-3.1-405b:free`                |
 | `LLM_API_KEY_ENV` | _(leave blank → ANTHROPIC)_     | `OPENROUTER_API_KEY`                                       |
 

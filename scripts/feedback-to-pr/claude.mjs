@@ -15,7 +15,10 @@ import Anthropic from "@anthropic-ai/sdk";
 //   LLM_MODEL       default: claude-sonnet-4-6
 //   LLM_API_KEY_ENV default: ANTHROPIC_API_KEY
 const MODEL            = process.env.LLM_MODEL    || "claude-sonnet-4-6";
-const BASE_URL         = process.env.LLM_BASE_URL || undefined;
+// The Anthropic SDK always appends `/v1/messages` to the baseURL, so the
+// baseURL must NOT end with `/v1` (even though some gateways document it
+// that way). Strip a trailing `/v1` defensively.
+const BASE_URL         = (process.env.LLM_BASE_URL || "").replace(/\/v1\/?$/, "").replace(/\/$/, "") || undefined;
 const API_KEY_ENV      = process.env.LLM_API_KEY_ENV || "ANTHROPIC_API_KEY";
 const MAX_TURNS        = 12;
 const MAX_OUTPUT_TOKENS = 8000;
