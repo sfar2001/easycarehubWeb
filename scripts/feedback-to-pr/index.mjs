@@ -108,6 +108,10 @@ async function main() {
   for (const fb of feedback) {
     console.log(`\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
     console.log(`Processing ${fb.id}: ${truncate(fb.message, 80)}`);
+    // Diagnostic: show what we extracted + every field Tally returned
+    console.log(`  extracted: name=${JSON.stringify(fb.name)} email=${JSON.stringify(fb.email)} pageUrl=${JSON.stringify(fb.page_url)}`);
+    console.log(`  message  : ${JSON.stringify(fb.message).slice(0, 200)}`);
+    console.log(`  all fields: ${JSON.stringify(fb.raw_fields || {})}`);
 
     const branch = buildBranchName(fb);
 

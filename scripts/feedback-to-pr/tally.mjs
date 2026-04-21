@@ -75,6 +75,32 @@ async function request(url, token) {
   catch { throw new Error(`Tally returned non-JSON body. First 200 chars: ${text.slice(0, 200)}`); }
 }
 
+// Substring matchers (case-insensitive) for flexible field extraction.
+// Covers typical EN/DE/FR wording of the same concept.
+const MATCH_MESSAGE  = /(message|feedback|comment|describ|body|text|content|nachricht|kommentar|commentaire|description|beschreibung)/i;
+const MATCH_NAME     = /(^|_)(name|vorname|nachname|nom|prenom|prénom)/i;
+const MATCH_EMAIL    = /(email|e-?mail|mail)/i;
+const MATCH_PAGE_URL = /(page.?url|url|seite|adresse)/i;
+
+function findByLabel(fields, matcher) {
+  for (const [k, v] of Object.entries(fields)) {
+    if (matcher.test(k) && v) return v;
+  }
+  return "";
+}
+
+/** Pick the longest non-URL text value — a safe fallback for "the message". */
+function pickLongestText(fields) {
+  let best = "";
+  for (const v of Object.values(fields)) {
+    if (typeof v !== "string" || v.length <= best.length) continue;
+    if (/^https?:\/\//i.test(v.trim())) continue; // skip URLs
+    if (/^[\w.-]+@[\w.-]+$/.test(v.trim())) continue; // skip emails
+    best = v;
+  }
+  return best;
+}
+
 /**
  * Flatten a Tally submission into a compact, predictable shape.
  * Tally submissions look like:
@@ -88,20 +114,23 @@ function normalise(raw, formId) {
 
   const fields = {};
   for (const r of rows) {
-    const key = (r.label || r.key || r.name || "").toString().toLowerCase().replace(/\s+/g, "_");
+    const label = (r.label || r.key || r.name || "").toString();
+    const key = label.toLowerCase().replaceAll(/\s+/g, "_");
     if (!key) continue;
     const value = r.value ?? r.answer ?? r.response ?? "";
-    fields[key] = Array.isArray(value) ? value.join(", ") : String(value);
+    fields[key] = Array.isArray(value) ? value.join(", ") : String(value ?? "");
   }
+
+  const message = findByLabel(fields, MATCH_MESSAGE) || pickLongestText(fields);
 
   return {
     id: String(raw.id || raw._id || ""),
     form_id: formId,
     created_at: raw.createdAt || raw.created_at || new Date().toISOString(),
-    name:     fields.name || fields.full_name || "",
-    email:    fields.email || "",
-    message:  fields.message || fields.feedback || fields.comment || fields.description || "",
-    page_url: fields.pageurl || fields.page_url || fields.url || "",
+    name:     findByLabel(fields, MATCH_NAME),
+    email:    findByLabel(fields, MATCH_EMAIL),
+    message,
+    page_url: findByLabel(fields, MATCH_PAGE_URL),
     raw_fields: fields,
     raw, // kept for debugging / prompt context
   };
