@@ -269,6 +269,31 @@ function runToolCalls(toolCalls, repoRoot, filesChanged) {
   return { toolMessages, doneCalled, doneResult };
 }
 
+// ---- 429 / 503 retry with exponential backoff ---------------------------
+
+const RETRYABLE_STATUSES = new Set([408, 425, 429, 502, 503, 504]);
+const MAX_RETRIES = 5;
+
+async function callWithRetry(client, params) {
+  let attempt = 0;
+  while (true) {
+    try {
+      return await client.chat.completions.create(params);
+    } catch (err) {
+      const status = err?.status;
+      if (!RETRYABLE_STATUSES.has(status) || attempt >= MAX_RETRIES) throw err;
+      // Prefer Retry-After header when present, else exponential backoff.
+      const retryAfter = Number(err?.headers?.["retry-after"] || err?.headers?.get?.("retry-after") || 0);
+      const waitMs = retryAfter > 0
+        ? retryAfter * 1000
+        : Math.min(30_000, 1000 * 2 ** attempt + Math.floor(Math.random() * 500));
+      console.log(`  ⚠ ${status} from LLM — retry ${attempt + 1}/${MAX_RETRIES} in ${Math.round(waitMs / 1000)}s`);
+      await new Promise((r) => setTimeout(r, waitMs));
+      attempt += 1;
+    }
+  }
+}
+
 // ---- Main exported function ---------------------------------------------
 
 export async function analyseAndFix(feedback, repoRoot) {
@@ -297,7 +322,7 @@ export async function analyseAndFix(feedback, repoRoot) {
   };
 
   for (let turn = 0; turn < MAX_TURNS; turn++) {
-    const resp = await client.chat.completions.create({
+    const resp = await callWithRetry(client, {
       model: MODEL,
       max_tokens: MAX_OUTPUT_TOKENS,
       messages,
