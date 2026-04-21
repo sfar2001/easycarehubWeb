@@ -62,15 +62,17 @@ jobs:
           LIMIT:              ${{ inputs.limit }}
           TALLY_FORM_ID:      "WOp6Qv"
 
-          # LLM provider. Defaults to Anthropic direct when
-          # LLM_BASE_URL / LLM_MODEL are blank. To use OpenRouter instead:
-          #   1. Add OPENROUTER_API_KEY secret
-          #   2. Set repo variable LLM_BASE_URL = https://openrouter.ai/api/v1
-          #   3. Set repo variable LLM_MODEL   = nousresearch/hermes-3-llama-3.1-405b:free
-          #      (or any other OpenRouter model string)
-          #   4. Set repo variable LLM_API_KEY_ENV = OPENROUTER_API_KEY
-          ANTHROPIC_API_KEY:  ${{ secrets.ANTHROPIC_API_KEY }}
+          # LLM provider (OpenAI-compatible). Defaults to OpenRouter.
+          # To override provider/model without touching code, set these
+          # repository variables (Settings → Actions → Variables):
+          #   LLM_BASE_URL     e.g. https://openrouter.ai/api/v1   (default)
+          #                    or  https://api.openai.com/v1
+          #   LLM_MODEL        e.g. nousresearch/hermes-3-llama-3.1-405b:free
+          #                    or  anthropic/claude-sonnet-4.5
+          #                    or  gpt-4o-mini  (if using OpenAI directly)
+          #   LLM_API_KEY_ENV  which env var holds the key (default OPENROUTER_API_KEY)
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPENAI_API_KEY:     ${{ secrets.OPENAI_API_KEY }}
           LLM_BASE_URL:       ${{ vars.LLM_BASE_URL }}
           LLM_MODEL:          ${{ vars.LLM_MODEL }}
           LLM_API_KEY_ENV:    ${{ vars.LLM_API_KEY_ENV }}
