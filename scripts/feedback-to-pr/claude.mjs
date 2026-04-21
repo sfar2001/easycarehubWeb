@@ -18,8 +18,20 @@ import OpenAI from "openai";
 // ---- Provider / model config --------------------------------------------
 
 const MODEL     = process.env.LLM_MODEL    || "anthropic/claude-sonnet-4.5";
-const BASE_URL  = process.env.LLM_BASE_URL || "https://openrouter.ai/api/v1";
+// The OpenAI SDK appends `/chat/completions` to baseURL. So baseURL MUST end
+// with `/v1` (or whatever the provider's API version path is). If the caller
+// sets `https://openrouter.ai/api` by mistake, auto-append `/v1`.
+const BASE_URL  = normaliseBaseUrl(process.env.LLM_BASE_URL || "https://openrouter.ai/api/v1");
 const API_KEY_ENV = process.env.LLM_API_KEY_ENV || "OPENROUTER_API_KEY";
+
+function normaliseBaseUrl(u) {
+  const stripped = u.replace(/\/+$/, "");
+  // If it already ends with something that looks like an API version, leave it alone.
+  if (/\/v\d+(\.\d+)*$/.test(stripped)) return stripped;
+  // OpenRouter's path is /api/v1 — handle the common mistake of stopping at /api.
+  if (stripped.endsWith("/api")) return `${stripped}/v1`;
+  return stripped;
+}
 
 const MAX_TURNS         = 12;
 const MAX_OUTPUT_TOKENS = 4000;
@@ -295,7 +307,14 @@ export async function analyseAndFix(feedback, repoRoot) {
 
     const choice = resp.choices?.[0];
     const msg    = choice?.message;
-    if (!msg) throw new Error("LLM returned no message");
+    if (!msg) {
+      // Dump whatever the provider returned so we can diagnose.
+      const dump = JSON.stringify({ id: resp.id, model: resp.model, choices: resp.choices, error: resp.error, usage: resp.usage }, null, 2);
+      throw new Error(`LLM returned no message. Full response:\n${dump}`);
+    }
+    if (choice.error) {
+      throw new Error(`LLM returned an error: ${JSON.stringify(choice.error)}`);
+    }
 
     // Append the assistant turn verbatim so tool_call_ids line up
     messages.push({
