@@ -157,6 +157,45 @@
 .breadcrumbs a:hover { color: var(--ink-900); }
 .breadcrumbs .sep { margin: 0 8px; }
 
+/* ---------- Feedback floating action button ---------- */
+.feedback-fab {
+  position: fixed;
+  left: 20px;
+  bottom: 20px;
+  z-index: 900;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #fff;
+  background: var(--hartmann-red);
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(225, 0, 26, 0.38);
+  transition: transform var(--t-fast) var(--ease-out),
+              box-shadow var(--t-fast) var(--ease-out),
+              background var(--t-fast);
+}
+.feedback-fab:hover {
+  background: var(--hartmann-red-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(225, 0, 26, 0.48);
+}
+.feedback-fab:focus-visible {
+  outline: 3px solid rgba(225, 0, 26, 0.35);
+  outline-offset: 3px;
+}
+@media (max-width: 640px) {
+  .feedback-fab {
+    padding: 10px 14px;
+    font-size: 0.85rem;
+  }
+}
+
 /* ---------- Footer ---------- */
 .site-footer {
   background: #fff; border-top: 1px solid var(--ink-200);

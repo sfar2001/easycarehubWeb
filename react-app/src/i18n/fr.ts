@@ -90,6 +90,10 @@ export const fr: Translations = {
     pdfMeta: "PDF · A4 · Révision 1.4 · EN",
     pdfCta: "Télécharger le PDF"
   },
+  feedback: {
+    button: "Commentaires",
+    buttonTitle: "Partager vos commentaires"
+  },
   manual: {
     breadcrumb: "Documentation",
     eyebrow: "Manuel utilisateur · Rév. 1.4",

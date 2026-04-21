@@ -2,6 +2,8 @@ import { Route, Routes } from "react-router-dom";
 import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
 import { ScrollToTop } from "./components/ScrollToTop";
+import { DevTestPanel } from "./components/DevTestPanel";
+import { FeedbackWidget } from "./components/FeedbackWidget";
 import { HomePage } from "./pages/HomePage";
 import { ManualPage } from "./pages/ManualPage";
 import { FaqPage } from "./pages/FaqPage";
@@ -23,6 +25,8 @@ export default function App() {
         </Routes>
       </main>
       <Footer />
+      <FeedbackWidget />
+      <DevTestPanel />
     </>
   );
 }

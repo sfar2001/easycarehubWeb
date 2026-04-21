@@ -120,6 +120,10 @@ const I18N = {
       pdfMeta: "PDF · A4 · Revision 1.4 · EN",
       pdfCta: "Download PDF"
     },
+    feedback: {
+      button: "Feedback",
+      buttonTitle: "Share your feedback"
+    },
     /* ---------------- MANUAL ---------------- */
     manual: {
       breadcrumb: "Documentation",
@@ -615,6 +619,10 @@ const I18N = {
       pdfMeta: "PDF · A4 · Revision 1.4 · EN",
       pdfCta: "PDF herunterladen"
     },
+    feedback: {
+      button: "Feedback",
+      buttonTitle: "Feedback senden"
+    },
     manual: {
       breadcrumb: "Dokumentation",
       eyebrow: "Benutzerhandbuch · Rev. 1.4",
@@ -1057,6 +1065,10 @@ const I18N = {
       pdfSub: "Un PDF typographié du manuel complet — prêt pour l'impression et la consultation hors ligne.",
       pdfMeta: "PDF · A4 · Révision 1.4 · EN",
       pdfCta: "Télécharger le PDF"
+    },
+    feedback: {
+      button: "Commentaires",
+      buttonTitle: "Partager vos commentaires"
     },
     manual: {
       breadcrumb: "Documentation",

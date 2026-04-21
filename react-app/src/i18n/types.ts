@@ -65,6 +65,10 @@ export interface Translations {
     pdfMeta: string;
     pdfCta: string;
   };
+  feedback: {
+    button: string;
+    buttonTitle: string;
+  };
   manual: ManualContent;
   faq: FaqContent;
   releases: ReleasesContent;
