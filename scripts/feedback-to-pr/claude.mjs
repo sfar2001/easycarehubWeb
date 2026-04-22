@@ -1,42 +1,26 @@
 /* =====================================================================
-   LLM tool-use loop (OpenAI / OpenRouter format).
+   Claude tool-use loop (Anthropic Messages API, direct).
 
-   Given one piece of Tally feedback, the model uses OpenAI-style
-   function calling to read/list/write files under an allow-list and
-   then calls `done` to finish. All file-system access is sandboxed
-   to the repo root and a whitelist of source paths.
+   Given one piece of Tally feedback, Claude uses Anthropic's native
+   tool_use API to read/list/write files under an allow-list, then calls
+   `done` to finish. All file-system access is sandboxed to the repo root
+   and a whitelist of source paths.
 
-   The OpenAI SDK is used because it's the canonical way to talk to
-   OpenRouter (and obviously OpenAI itself). Pointing it at a different
-   provider is a one-line base-URL change.
+   Env:
+     ANTHROPIC_API_KEY  required — from https://console.anthropic.com/
+     LLM_MODEL          optional — default claude-haiku-4-5
    ===================================================================== */
 
 import fs from "node:fs";
 import path from "node:path";
-import OpenAI from "openai";
+import Anthropic from "@anthropic-ai/sdk";
 
-// ---- Provider / model config --------------------------------------------
-
-const MODEL     = process.env.LLM_MODEL    || "anthropic/claude-sonnet-4.5";
-// The OpenAI SDK appends `/chat/completions` to baseURL. So baseURL MUST end
-// with `/v1` (or whatever the provider's API version path is). If the caller
-// sets `https://openrouter.ai/api` by mistake, auto-append `/v1`.
-const BASE_URL  = normaliseBaseUrl(process.env.LLM_BASE_URL || "https://openrouter.ai/api/v1");
-const API_KEY_ENV = process.env.LLM_API_KEY_ENV || "OPENROUTER_API_KEY";
-
-function normaliseBaseUrl(u) {
-  const stripped = u.replace(/\/+$/, "");
-  // If it already ends with something that looks like an API version, leave it alone.
-  if (/\/v\d+(\.\d+)*$/.test(stripped)) return stripped;
-  // OpenRouter's path is /api/v1 — handle the common mistake of stopping at /api.
-  if (stripped.endsWith("/api")) return `${stripped}/v1`;
-  return stripped;
-}
-
-const MAX_TURNS         = 12;
+const MODEL = process.env.LLM_MODEL || "claude-haiku-4-5";
+const MAX_TURNS = 12;
 const MAX_OUTPUT_TOKENS = 4000;
+const CLIENT_VERSION = 3;
 
-console.log(`[llm driver] model=${MODEL}  via ${BASE_URL}`);
+console.log(`[claude driver v${CLIENT_VERSION}] model=${MODEL}  via Anthropic direct`);
 
 // ---- File permission policy ---------------------------------------------
 
@@ -82,66 +66,51 @@ function canRead(rel) {
   return ALLOW_READ_EXTRA.some((r) => r.test(rel));
 }
 
-// ---- Tool definitions (OpenAI function-calling shape) -------------------
+// ---- Tool definitions (Anthropic tool_use format) -----------------------
 
 const TOOLS = [
   {
-    type: "function",
-    function: {
-      name: "list_files",
-      description:
-        "List files under a directory (relative to repo root). Returns only files the bot is allowed to read.",
-      parameters: {
-        type: "object",
-        properties: {
-          dir: { type: "string", description: "Directory. Omit or pass '.' for repo root." },
-        },
+    name: "list_files",
+    description: "List files under a directory (relative to repo root). Returns only files the bot is allowed to read.",
+    input_schema: {
+      type: "object",
+      properties: {
+        dir: { type: "string", description: "Directory. Omit or pass '.' for repo root." },
       },
     },
   },
   {
-    type: "function",
-    function: {
-      name: "read_file",
-      description: "Read the full UTF-8 contents of a file (<= 120 KB).",
-      parameters: {
-        type: "object",
-        properties: { path: { type: "string" } },
-        required: ["path"],
-      },
+    name: "read_file",
+    description: "Read the full UTF-8 contents of a file (<= 120 KB).",
+    input_schema: {
+      type: "object",
+      properties: { path: { type: "string" } },
+      required: ["path"],
     },
   },
   {
-    type: "function",
-    function: {
-      name: "write_file",
-      description:
-        "Overwrite a file with new contents. MUST be an allowed path; otherwise the call fails.",
-      parameters: {
-        type: "object",
-        properties: {
-          path:    { type: "string" },
-          content: { type: "string" },
-        },
-        required: ["path", "content"],
+    name: "write_file",
+    description: "Overwrite a file with new contents. MUST be an allowed path; otherwise the call fails.",
+    input_schema: {
+      type: "object",
+      properties: {
+        path:    { type: "string" },
+        content: { type: "string" },
       },
+      required: ["path", "content"],
     },
   },
   {
-    type: "function",
-    function: {
-      name: "done",
-      description:
-        "Finish. should_open_pr=false if the feedback does not warrant a code change.",
-      parameters: {
-        type: "object",
-        properties: {
-          summary:        { type: "string" },
-          files_changed:  { type: "array", items: { type: "string" } },
-          should_open_pr: { type: "boolean" },
-        },
-        required: ["summary", "files_changed", "should_open_pr"],
+    name: "done",
+    description: "Finish. should_open_pr=false if the feedback does not warrant a code change.",
+    input_schema: {
+      type: "object",
+      properties: {
+        summary:        { type: "string" },
+        files_changed:  { type: "array", items: { type: "string" } },
+        should_open_pr: { type: "boolean" },
       },
+      required: ["summary", "files_changed", "should_open_pr"],
     },
   },
 ];
@@ -150,7 +119,7 @@ const TOOLS = [
 
 const SYSTEM = `You are a careful code-modification assistant for the HARTMANN Easy Care Hub website.
 
-You receive ONE piece of user feedback submitted through the site's Tally form. Decide whether the feedback can be addressed with a small code change, and if so, make it. Always finish by calling the \`done\` function.
+You receive ONE piece of user feedback submitted through the site's Tally form. Decide whether the feedback can be addressed with a small code change, and if so, make it. Always finish by calling the \`done\` tool.
 
 Workflow:
 1. If the feedback is a compliment, a question, a hardware/server issue, unintelligible, off-topic, or otherwise NOT actionable as a website code change, call \`done\` with should_open_pr=false and explain briefly.
@@ -213,7 +182,7 @@ function toolWriteFile(root, { path: p, content }) {
   return `wrote ${Buffer.byteLength(content, "utf8")} bytes to ${rel}`;
 }
 
-// ---- Tool-call dispatcher -----------------------------------------------
+// ---- Tool-call dispatcher (Anthropic tool_use blocks) -------------------
 
 function dispatchTool(name, args, repoRoot, filesChanged) {
   switch (name) {
@@ -239,79 +208,68 @@ function dispatchTool(name, args, repoRoot, filesChanged) {
   }
 }
 
-function runToolCalls(toolCalls, repoRoot, filesChanged) {
-  const toolMessages = [];
+function runToolBlocks(blocks, repoRoot, filesChanged) {
+  const toolResults = [];
   let doneCalled = false;
   let doneResult = null;
 
-  for (const call of toolCalls) {
-    const name = call.function?.name;
-    let args = {};
-    try { args = call.function?.arguments ? JSON.parse(call.function.arguments) : {}; }
-    catch { args = {}; }
-
+  for (const block of blocks) {
+    if (block.type !== "tool_use") continue;
     try {
-      const outcome = dispatchTool(name, args, repoRoot, filesChanged);
+      const outcome = dispatchTool(block.name, block.input || {}, repoRoot, filesChanged);
       if (outcome.done) { doneCalled = true; doneResult = outcome.result; }
-      toolMessages.push({
-        role: "tool",
-        tool_call_id: call.id,
+      toolResults.push({
+        type: "tool_result",
+        tool_use_id: block.id,
         content: typeof outcome.content === "string" ? outcome.content : JSON.stringify(outcome.content),
       });
     } catch (err) {
-      toolMessages.push({
-        role: "tool",
-        tool_call_id: call.id,
+      toolResults.push({
+        type: "tool_result",
+        tool_use_id: block.id,
         content: `ERROR: ${err.message}`,
+        is_error: true,
       });
     }
   }
-  return { toolMessages, doneCalled, doneResult };
+
+  return { toolResults, doneCalled, doneResult };
 }
 
-// ---- 429 / 503 retry with exponential backoff ---------------------------
+// ---- 429 / 529 retry with exponential backoff --------------------------
 
-const RETRYABLE_STATUSES = new Set([408, 425, 429, 502, 503, 504]);
+const RETRYABLE_STATUSES = new Set([408, 425, 429, 500, 502, 503, 504, 529]);
 const MAX_RETRIES = 5;
 
 async function callWithRetry(client, params) {
   let attempt = 0;
   while (true) {
     try {
-      return await client.chat.completions.create(params);
+      return await client.messages.create(params);
     } catch (err) {
       const status = err?.status;
       if (!RETRYABLE_STATUSES.has(status) || attempt >= MAX_RETRIES) throw err;
-      // Prefer Retry-After header when present, else exponential backoff.
       const retryAfter = Number(err?.headers?.["retry-after"] || err?.headers?.get?.("retry-after") || 0);
       const waitMs = retryAfter > 0
         ? retryAfter * 1000
         : Math.min(30_000, 1000 * 2 ** attempt + Math.floor(Math.random() * 500));
-      console.log(`  ⚠ ${status} from LLM — retry ${attempt + 1}/${MAX_RETRIES} in ${Math.round(waitMs / 1000)}s`);
+      console.log(`  ⚠ ${status} from Anthropic — retry ${attempt + 1}/${MAX_RETRIES} in ${Math.round(waitMs / 1000)}s`);
       await new Promise((r) => setTimeout(r, waitMs));
       attempt += 1;
     }
   }
 }
 
-// ---- Main exported function ---------------------------------------------
+// ---- Main exported function --------------------------------------------
 
 export async function analyseAndFix(feedback, repoRoot) {
-  const apiKey = process.env[API_KEY_ENV];
-  if (!apiKey) throw new Error(`${API_KEY_ENV} is not set`);
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) throw new Error("ANTHROPIC_API_KEY is not set");
 
-  const client = new OpenAI({
-    apiKey,
-    baseURL: BASE_URL,
-    defaultHeaders: {
-      "HTTP-Referer": "https://github.com/sfar2001/easycarehubWeb",
-      "X-Title": "EasyCareHub feedback bot",
-    },
-  });
+  const client = new Anthropic({ apiKey });
 
   const messages = [
-    { role: "system", content: SYSTEM },
-    { role: "user",   content: buildUserPrompt(feedback) },
+    { role: "user", content: [{ type: "text", text: buildUserPrompt(feedback) }] },
   ];
 
   const filesChanged = new Set();
@@ -325,39 +283,21 @@ export async function analyseAndFix(feedback, repoRoot) {
     const resp = await callWithRetry(client, {
       model: MODEL,
       max_tokens: MAX_OUTPUT_TOKENS,
-      messages,
+      system: SYSTEM,
       tools: TOOLS,
-      tool_choice: "auto",
+      messages,
     });
 
-    const choice = resp.choices?.[0];
-    const msg    = choice?.message;
-    if (!msg) {
-      // Dump whatever the provider returned so we can diagnose.
-      const dump = JSON.stringify({ id: resp.id, model: resp.model, choices: resp.choices, error: resp.error, usage: resp.usage }, null, 2);
-      throw new Error(`LLM returned no message. Full response:\n${dump}`);
-    }
-    if (choice.error) {
-      throw new Error(`LLM returned an error: ${JSON.stringify(choice.error)}`);
-    }
+    messages.push({ role: "assistant", content: resp.content });
 
-    // Append the assistant turn verbatim so tool_call_ids line up
-    messages.push({
-      role: "assistant",
-      content: msg.content ?? "",
-      ...(msg.tool_calls ? { tool_calls: msg.tool_calls } : {}),
-    });
-
-    const toolCalls = msg.tool_calls || [];
-    if (toolCalls.length === 0) {
-      // Plain text response → treat as an implicit finish
-      const text = msg.content || "";
+    if (resp.stop_reason !== "tool_use") {
+      const text = resp.content.find((b) => b.type === "text")?.text || "";
       result = { summary: text || result.summary, filesChanged: [...filesChanged], shouldOpenPr: false };
       break;
     }
 
-    const { toolMessages, doneCalled, doneResult } = runToolCalls(toolCalls, repoRoot, filesChanged);
-    messages.push(...toolMessages);
+    const { toolResults, doneCalled, doneResult } = runToolBlocks(resp.content, repoRoot, filesChanged);
+    messages.push({ role: "user", content: toolResults });
     if (doneCalled) {
       if (doneResult) result = doneResult;
       break;
@@ -382,7 +322,6 @@ function buildUserPrompt(fb) {
     .filter(([k]) => !["name", "email", "message", "feedback", "comment", "description", "pageurl", "page_url", "url"].includes(k))
     .map(([k, v]) => `- ${k}: ${v}`)
     .join("\n");
-
   const extraBlock = extra ? `\n### Additional fields\n${extra}\n` : "";
 
   return `## User feedback from the EasyCareHub website

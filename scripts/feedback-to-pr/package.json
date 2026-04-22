@@ -9,6 +9,6 @@
     "dry-run": "DRY_RUN=1 node index.mjs"
   },
   "dependencies": {
-    "openai": "^6.34.0"
+    "@anthropic-ai/sdk": "^0.90.0"
   }
 }

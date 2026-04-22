@@ -56,24 +56,14 @@ jobs:
         working-directory: scripts/feedback-to-pr
         env:
           # Pipeline inputs
-          TALLY_API_KEY:      ${{ secrets.TALLY_API_KEY }}
-          GH_TOKEN:           ${{ secrets.GITHUB_TOKEN }}
-          REPO:               ${{ github.repository }}
-          LIMIT:              ${{ inputs.limit }}
-          TALLY_FORM_ID:      "WOp6Qv"
+          TALLY_API_KEY:     ${{ secrets.TALLY_API_KEY }}
+          GH_TOKEN:          ${{ secrets.GITHUB_TOKEN }}
+          REPO:              ${{ github.repository }}
+          LIMIT:             ${{ inputs.limit }}
+          TALLY_FORM_ID:     "WOp6Qv"
 
-          # LLM provider (OpenAI-compatible). Defaults to OpenRouter.
-          # To override provider/model without touching code, set these
-          # repository variables (Settings → Actions → Variables):
-          #   LLM_BASE_URL     e.g. https://openrouter.ai/api/v1   (default)
-          #                    or  https://api.openai.com/v1
-          #   LLM_MODEL        e.g. nousresearch/hermes-3-llama-3.1-405b:free
-          #                    or  anthropic/claude-sonnet-4.5
-          #                    or  gpt-4o-mini  (if using OpenAI directly)
-          #   LLM_API_KEY_ENV  which env var holds the key (default OPENROUTER_API_KEY)
-          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-          OPENAI_API_KEY:     ${{ secrets.OPENAI_API_KEY }}
-          LLM_BASE_URL:       ${{ vars.LLM_BASE_URL }}
-          LLM_MODEL:          ${{ vars.LLM_MODEL }}
-          LLM_API_KEY_ENV:    ${{ vars.LLM_API_KEY_ENV }}
+          # LLM: Anthropic direct. Model is overridable via a repo variable.
+          #   LLM_MODEL   e.g. claude-haiku-4-5 (default) | claude-sonnet-4-6 | claude-opus-4-7
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          LLM_MODEL:         ${{ vars.LLM_MODEL }}
         run: node index.mjs
