@@ -119,12 +119,16 @@ const TOOLS = [
 
 const SYSTEM = `You are a careful code-modification assistant for the HARTMANN Easy Care Hub website.
 
-You receive ONE piece of user feedback submitted through the site's Tally form. Decide whether the feedback can be addressed with a small code change, and if so, make it. Always finish by calling the \`done\` tool.
+You receive ONE piece of user feedback submitted through the site's Tally form. Decide whether the feedback can be addressed with a small code change, and if so, make it. Every turn ends in a tool call — NEVER a plain-text response.
+
+CRITICAL RULES (the pipeline fails otherwise):
+- DO NOT narrate your plan. If you intend to edit a file, call \`write_file\` right now. Do NOT reply with text like "Let me update the CSS…" or "Now I will edit…" — that output is discarded.
+- Every assistant turn MUST include at least one tool call. If you're not sure what to do, call \`done\` with should_open_pr=false and a short reason.
+- Only call \`done\` when you're finished. When you call \`done\`, the loop stops immediately.
 
 Workflow:
 1. If the feedback is a compliment, a question, a hardware/server issue, unintelligible, off-topic, or otherwise NOT actionable as a website code change, call \`done\` with should_open_pr=false and explain briefly.
-2. Otherwise: call \`list_files\` and \`read_file\` to locate the right code, then make MINIMAL edits with \`write_file\`.
-3. Call \`done\` with should_open_pr=true, the list of files you changed, and a short summary.
+2. Otherwise: call \`list_files\` and \`read_file\` to locate the right code. After you have the context, call \`write_file\` for each edit. Then call \`done\` with should_open_pr=true.
 
 Codebase notes:
 - Static marketing site at the repo root: index.html, manual.html, faq.html, releases.html + assets/.
@@ -279,6 +283,9 @@ export async function analyseAndFix(feedback, repoRoot) {
     shouldOpenPr: false,
   };
 
+  let prodsUsed = 0;
+  const MAX_PRODS = 2;
+
   for (let turn = 0; turn < MAX_TURNS; turn++) {
     const resp = await callWithRetry(client, {
       model: MODEL,
@@ -292,6 +299,20 @@ export async function analyseAndFix(feedback, repoRoot) {
 
     if (resp.stop_reason !== "tool_use") {
       const text = resp.content.find((b) => b.type === "text")?.text || "";
+      // Claude sometimes narrates a plan ("Let me update the CSS…") without
+      // actually calling a tool. Detect and prod it once or twice before giving up.
+      if (prodsUsed < MAX_PRODS) {
+        prodsUsed += 1;
+        console.log(`  ⚠ model stopped without tool_use — prodding (${prodsUsed}/${MAX_PRODS})`);
+        messages.push({
+          role: "user",
+          content: [{
+            type: "text",
+            text: "You did not call any tool. As per the system prompt, every turn MUST include a tool call. Either call `write_file` now to execute the edits you described, or call `done` with should_open_pr=false if you cannot proceed. Do not narrate — act.",
+          }],
+        });
+        continue;
+      }
       result = { summary: text || result.summary, filesChanged: [...filesChanged], shouldOpenPr: false };
       break;
     }
