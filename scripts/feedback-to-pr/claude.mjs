@@ -17,7 +17,7 @@ import Anthropic from "@anthropic-ai/sdk";
 
 const MODEL = process.env.LLM_MODEL || "claude-haiku-4-5";
 const MAX_TURNS = 12;
-const MAX_OUTPUT_TOKENS = 4000;
+const MAX_OUTPUT_TOKENS = 8000;
 const CLIENT_VERSION = 3;
 
 console.log(`[claude driver v${CLIENT_VERSION}] model=${MODEL}  via Anthropic direct`);
@@ -297,13 +297,14 @@ export async function analyseAndFix(feedback, repoRoot) {
 
     messages.push({ role: "assistant", content: resp.content });
 
-    if (resp.stop_reason !== "tool_use") {
+    const toolBlocks = resp.content.filter((b) => b.type === "tool_use");
+
+    // --- Case 1: zero tool calls → Claude narrated only. Prod or give up. ---
+    if (toolBlocks.length === 0) {
       const text = resp.content.find((b) => b.type === "text")?.text || "";
-      // Claude sometimes narrates a plan ("Let me update the CSS…") without
-      // actually calling a tool. Detect and prod it once or twice before giving up.
       if (prodsUsed < MAX_PRODS) {
         prodsUsed += 1;
-        console.log(`  ⚠ model stopped without tool_use — prodding (${prodsUsed}/${MAX_PRODS})`);
+        console.log(`  ⚠ model stopped without any tool call — prodding (${prodsUsed}/${MAX_PRODS})`);
         messages.push({
           role: "user",
           content: [{
@@ -317,11 +318,20 @@ export async function analyseAndFix(feedback, repoRoot) {
       break;
     }
 
+    // --- Case 2: tool calls present → always run them and append results. ---
+    // (Anthropic requires every tool_use to be followed by its tool_result in
+    //  the NEXT message, regardless of stop_reason.)
     const { toolResults, doneCalled, doneResult } = runToolBlocks(resp.content, repoRoot, filesChanged);
     messages.push({ role: "user", content: toolResults });
     if (doneCalled) {
       if (doneResult) result = doneResult;
       break;
+    }
+
+    // If the API cut us off mid-response (max_tokens) but Claude was in the
+    // middle of calling tools, the next iteration will continue from here.
+    if (resp.stop_reason === "max_tokens") {
+      console.log(`  ⚠ stop_reason=max_tokens — continuing for another turn to let Claude finish`);
     }
   }
 
