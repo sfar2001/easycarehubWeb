@@ -1,0 +1,49 @@
+Screenshots Captured — Easy Care Hub Manual
+🏠 1. Vitals Dashboard (Main Page)
+
+Grid View — All 20 residents shown as cards with Room ID, status icons (In Bed / Away / Disconnected), Resident ID, duration, Heart Rate, and Breathing Rate
+List/Table View — Same data in tabular format with columns: Resident ID, Status, Duration, BrR (brpm), HR (bpm), Location, Zone, Device ID, Last updated
+Zone Filtering — Tabs for All Zones, Zone A, B, C, D (each showing filtered counts)
+Status Filtering — Buttons to filter by All, Asleep, In Bed, Away, Disconnected
+Expanded Sidebar — Showing all nav labels: Vitals, Residents, Notifications, Devices, Administration
+
+👥 2. Residents Page
+
+Residents List — Table with Resident ID, Device ID, Zone, Location, Resident Status
+"+ Create Resident" Modal — Fields: Resident ID, First Name, Last Name, Birth Year, Gender, Location, Device, Zone, Time Out of Bed notifications
+Resident Detail — Overview Tab — Details (name, location, device, zone) + Individual Notifications settings
+Resident Detail — Trends Tab (Last Week) — Heart Rate & Breathing Rate line charts with thresholds/baselines
+Resident Detail — Trends Tab (Last Night) — Hourly data with actual data points
+Resident Detail — Notifications Tab — List of notifications with Type, Device ID, Time, Details, Actions
+Resident Detail — Audit Log Tab
+
+🔔 3. Notifications Page
+
+Overview Tab — All notifications list (Type, Resident ID, Device ID, Time, Details, mark-as-reviewed)
+Filter Panel — Filters by Type (BrR/HR/Out of Bed), Resident ID, Device ID, Date period, Status (New/Reviewed)
+Medical Settings Tab — Global Threshold (Heart Rate: 72–78 bpm; Breathing Rate: 12–27 brpm) and Baseline settings
+Bed Activity Tab — Global "Time Out of Bed" notification settings with Bed Time Period and thresholds
+
+📱 4. Devices Page
+
+Devices List — Device ID, Zone, Location, Resident ID, Device Status (All/Assigned/Unassigned tabs)
+Device Detail Page — Status, Device ID, Location, Zone, Resident ID
+
+⚙️ 5. Administration Page
+
+Zones Tab — Zone list with Total/Active/Disconnected device counts + Create Zone modal
+Locations Tab — All room locations with Zone, Device ID, Resident ID mapping + Create Location modal
+Users Tab — User list with Name, Access Level (Admin/System Owner/User), Email, Status + Create User modal
+Zone Edit Form — Name and Description editable fields
+Create Zone/Location/User Modals — All 3 creation forms captured
+
+👤 6. My Account Page
+
+User profile: Name, Role, Language, Facility, Email
+Access Level permissions list (System Owner capabilities)
+Terms and Conditions & Privacy Notice accordions
+
+ℹ️ 7. Support / About Page
+
+Legal Information Tab — Software version (v1.2.0), Distributor (PAUL HARTMANN AG), Manufacturer (Sleepiz AG & ACTIMI GmbH)
+FAQ Tab — 10 FAQ items with Contact Us section (email/phone)

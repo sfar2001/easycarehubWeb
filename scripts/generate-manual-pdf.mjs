@@ -129,9 +129,12 @@ const SECTIONS = [
         "The Dashboard is the default landing view after login. It displays all devices assigned to the facility, grouped by zone. Resident tiles are colour-coded by current status. Clicking a tile opens the Resident Detail Page on the Trends tab." },
       { type: "figure", src: "fig-dashboard.png", caption: "Fig. 2.2 — The Vitals Dashboard with zone tabs, status-filter icons, resident tiles and the notification sidebar." },
       { type: "h3", text: "Zones" },
+      { type: "p", text:
+        "Tabs across the top group residents by facility zone — e.g. All Zones, Zone A, Zone B, Zone C, Zone D — with the resident count shown beside each label. Selecting a tab filters every tile on the Dashboard to that zone only." },
       { type: "p", text: "All Zones is selected by default. Click another zone tab to filter the view to devices assigned to that zone." },
       { type: "h3", text: "View toggle" },
-      { type: "p", text: "Switch between tile view and table view using the toggle at the top right." },
+      { type: "p", text: "Switch between tile view and table view using the toggle at the top right. The table view shows the same resident data in columns — Resident ID, Status, Duration, BrR (brpm), HR (bpm), Location, Zone, Device ID, Last updated — for quick scanning of large facilities." },
+      { type: "figure", src: "fig-dashboard-table.png", caption: "Fig. 2.3 — Dashboard in table view: the same residents as columns for scanning a full floor at once." },
       { type: "h3", text: "Visual status filter" },
       { type: "p", text: "Use the visual status filter to narrow the dashboard by resident status: All, Asleep, Away, In Bed or Disconnected." },
       { type: "h3", text: "Search" },
@@ -139,7 +142,7 @@ const SECTIONS = [
       { type: "h3", text: "Notification sidebar" },
       { type: "p", text:
         "The sidebar lists active notifications for HR, BrR and Out-of-Bed in order of triggering. Click the check icon to mark a notification as reviewed — it is removed from the sidebar and archived to the resident's Audit Log. Click See all to open the full Notifications page. The bell icon at the top right collapses or expands the sidebar." },
-      { type: "figure", src: "fig-notification-sidebar.png", caption: "Fig. 2.3 — The notification sidebar showing recent out-of-bed alerts and resident status tiles." },
+      { type: "figure", src: "fig-notification-sidebar.png", caption: "Fig. 2.4 — The notification sidebar showing recent out-of-bed alerts and resident status tiles." },
       { type: "callout", variant: "tip", title: "Keyboard shortcuts",
         text: "Press 1–9 to switch between the first nine zones. Press / to focus the search field. Press ? to open the keyboard shortcut reference." },
     ]
@@ -184,6 +187,7 @@ const SECTIONS = [
 
       { type: "h2", text: "4.1 Overview tab" },
       { type: "p", text: "Displays general information about the resident, split into Details and Individual Notifications." },
+      { type: "figure", src: "fig-resident-overview.png", caption: "Fig. 4.1 — Resident Detail · Overview tab. Status, ID, name, birth date, gender and assignment to location / device / zone." },
       { type: "h3", text: "Details" },
       { type: "ul", items: [
         "Status (Active / Discharged)",
@@ -198,18 +202,20 @@ const SECTIONS = [
         "Bedtime period is editable only from the Administration section, not here.",
         "Manual settings expose the same three options as during resident creation.",
       ]},
+      { type: "figure", src: "fig-resident-individual-notifications.png", caption: "Fig. 4.2 — The Individual Notifications section of the Overview tab. Per-resident Time-out-of-Bed rules override the facility-wide default." },
 
       { type: "h2", text: "4.2 Trends tab" },
       { type: "p", text:
         "Shows the resident's HR and BrR over time alongside the last night's sleep report. Filter by date or timeframe. Y-axis ranges: HR 40–120 bpm, BrR 5–40 brpm. Yellow and purple markers indicate the configured global thresholds and baseline values." },
-      { type: "figure", src: "fig-night-report.png", caption: "Fig. 4.1 — Night report on the Trends tab, with sleep start / end, time in bed, and sleep efficiency against the 7-day average." },
+      { type: "figure", src: "fig-trends.png", caption: "Fig. 4.3 — Trends tab with Custom / Last night / Last week presets and Heart Rate + Breathing Rate line charts." },
+      { type: "figure", src: "fig-night-report.png", caption: "Fig. 4.4 — Night report on the Trends tab, with sleep start / end, time in bed, and sleep efficiency against the 7-day average." },
       { type: "callout", variant: "tip", title: "Why is data missing?",
         text: "Night-report data are typically delivered about 30 minutes after the facility's defined night period. If values are still missing, data quality may have been insufficient — for example, the resident was not in bed, or fewer than four hours of data were recorded. If this occurs repeatedly while the resident was in bed, contact customer service." },
 
       { type: "h2", text: "4.3 Notifications tab" },
       { type: "p", text:
         "Lists every notification for this resident with Type, Resident ID, Device ID, Time, Details and Actions. Three preset ranges are available above the table:" },
-      { type: "figure", src: "fig-notifications-tab.png", caption: "Fig. 4.2 — Notifications tab on the Resident Detail Page, with preset date ranges, filter and per-row acknowledge." },
+      { type: "figure", src: "fig-notifications-tab.png", caption: "Fig. 4.5 — Notifications tab on the Resident Detail Page, with preset date ranges, filter and per-row acknowledge." },
       { type: "ul", items: ["Custom — pick a calendar date range.", "Last Night.", "Last Week."] },
       { type: "p", text:
         "Mark a notification as reviewed using the check icon in the Actions column. Once reviewed, it is removed from this tab and moved to the Audit Log. Click Filter to narrow by type (HR, BrR, Out of Bed); active filters show as chips above the table." },
@@ -239,6 +245,8 @@ const SECTIONS = [
       ]},
       { type: "p", text:
         "By default the platform pre-fills these values using ranges derived from medical studies and established clinical guidelines. Click the edit icon on the right to modify; the other tabs become unavailable while a bottom bar with Cancel and Save is shown." },
+      { type: "callout", variant: "note", title: "Typical default thresholds",
+        text: "Heart Rate alert range: 72–78 bpm. Breathing Rate alert range: 12–27 brpm. These are starting points only — each facility should validate ranges with its clinical lead before going live." },
 
       { type: "h2", text: "5.3 Bed activity tab" },
       { type: "p", text: "Configures the Out-of-Bed notification applied to all residents by default. Override per resident from the Resident Detail page. Three rules can be applied:" },
@@ -280,7 +288,8 @@ const SECTIONS = [
       { type: "h2", text: "7.1 Zones" },
       { type: "p", text:
         "Table of every zone with Name, Description, Total / Active / Disconnected device counts and Actions (Delete — System Owner only). Create a zone via + Create Zone; Name is required, Description optional." },
-      { type: "figure", src: "fig-administration-zones.png", caption: "Fig. 7.1 — Administration → Zones." },
+      { type: "figure", src: "fig-administration-zones.png", caption: "Fig. 7.1 — Administration · Zones, showing device counts per zone (total, active, disconnected) and the Create Zone / Location / User actions top-right." },
+      { type: "figure", src: "fig-zone-detail.png", caption: "Fig. 7.2 — Zone detail: editable Name and Description, with an edit icon top-right." },
 
       { type: "h2", text: "7.2 Locations" },
       { type: "p", text:
@@ -289,7 +298,8 @@ const SECTIONS = [
       { type: "h2", text: "7.3 Users" },
       { type: "p", text:
         "Lists every user with Name, Access Level, Email, Status and Last Updated. Create new users via + Create User with First Name, Last Name, Email, Role and Access Level — the level's capabilities are shown below the field for clarity." },
-      { type: "figure", src: "fig-administration-users.png", caption: "Fig. 7.2 — Administration → Users." },
+      { type: "figure", src: "fig-administration-users.png", caption: "Fig. 7.3 — Administration · Users. Each row shows role badge, email, status and last-updated timestamp." },
+      { type: "figure", src: "fig-administration-create-user.png", caption: "Fig. 7.4 — Create New User sidebar: First / Last Name, Email, Role and Access Level. Access-level capabilities appear below the selection." },
     ]
   },
   {
