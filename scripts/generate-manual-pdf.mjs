@@ -102,6 +102,7 @@ const SECTIONS = [
       { type: "h2", text: "2.1 Login" },
       { type: "p", text:
         "Only authorised users can access the Easy Care Hub interface. After your account is created and a password set, sign in with your registered email address and password. The login also supports Single Sign-On when configured at facility level." },
+      { type: "figure", src: "fig-login.png", caption: "Fig. 2.1 — The Easy Care Hub login screen." },
       { type: "ol", items: [
         "Enter your user email in the email field.",
         "Enter your password in the password field.",
@@ -126,6 +127,7 @@ const SECTIONS = [
       { type: "h2", text: "2.4 Dashboard" },
       { type: "p", text:
         "The Dashboard is the default landing view after login. It displays all devices assigned to the facility, grouped by zone. Resident tiles are colour-coded by current status. Clicking a tile opens the Resident Detail Page on the Trends tab." },
+      { type: "figure", src: "fig-dashboard.png", caption: "Fig. 2.2 — The Vitals Dashboard with zone tabs, status-filter icons, resident tiles and the notification sidebar." },
       { type: "h3", text: "Zones" },
       { type: "p", text: "All Zones is selected by default. Click another zone tab to filter the view to devices assigned to that zone." },
       { type: "h3", text: "View toggle" },
@@ -137,6 +139,7 @@ const SECTIONS = [
       { type: "h3", text: "Notification sidebar" },
       { type: "p", text:
         "The sidebar lists active notifications for HR, BrR and Out-of-Bed in order of triggering. Click the check icon to mark a notification as reviewed — it is removed from the sidebar and archived to the resident's Audit Log. Click See all to open the full Notifications page. The bell icon at the top right collapses or expands the sidebar." },
+      { type: "figure", src: "fig-notification-sidebar.png", caption: "Fig. 2.3 — The notification sidebar showing recent out-of-bed alerts and resident status tiles." },
       { type: "callout", variant: "tip", title: "Keyboard shortcuts",
         text: "Press 1–9 to switch between the first nine zones. Press / to focus the search field. Press ? to open the keyboard shortcut reference." },
     ]
@@ -159,6 +162,7 @@ const SECTIONS = [
 
       { type: "h2", text: "3.2 Creating a new resident" },
       { type: "p", text: "Click + Create Resident in the top-right corner. A sidebar opens on the right with the following fields:" },
+      { type: "figure", src: "fig-create-resident.png", caption: "Fig. 3.1 — Create New Resident sidebar with ID, name, location and time-out-of-bed settings.", maxHeight: 360 },
       { type: "ol", items: [
         "Resident ID (required).",
         "First name, last name, date of birth (optional).",
@@ -198,12 +202,14 @@ const SECTIONS = [
       { type: "h2", text: "4.2 Trends tab" },
       { type: "p", text:
         "Shows the resident's HR and BrR over time alongside the last night's sleep report. Filter by date or timeframe. Y-axis ranges: HR 40–120 bpm, BrR 5–40 brpm. Yellow and purple markers indicate the configured global thresholds and baseline values." },
+      { type: "figure", src: "fig-night-report.png", caption: "Fig. 4.1 — Night report on the Trends tab, with sleep start / end, time in bed, and sleep efficiency against the 7-day average." },
       { type: "callout", variant: "tip", title: "Why is data missing?",
         text: "Night-report data are typically delivered about 30 minutes after the facility's defined night period. If values are still missing, data quality may have been insufficient — for example, the resident was not in bed, or fewer than four hours of data were recorded. If this occurs repeatedly while the resident was in bed, contact customer service." },
 
       { type: "h2", text: "4.3 Notifications tab" },
       { type: "p", text:
         "Lists every notification for this resident with Type, Resident ID, Device ID, Time, Details and Actions. Three preset ranges are available above the table:" },
+      { type: "figure", src: "fig-notifications-tab.png", caption: "Fig. 4.2 — Notifications tab on the Resident Detail Page, with preset date ranges, filter and per-row acknowledge." },
       { type: "ul", items: ["Custom — pick a calendar date range.", "Last Night.", "Last Week."] },
       { type: "p", text:
         "Mark a notification as reviewed using the check icon in the Actions column. Once reviewed, it is removed from this tab and moved to the Audit Log. Click Filter to narrow by type (HR, BrR, Out of Bed); active filters show as chips above the table." },
@@ -236,12 +242,14 @@ const SECTIONS = [
 
       { type: "h2", text: "5.3 Bed activity tab" },
       { type: "p", text: "Configures the Out-of-Bed notification applied to all residents by default. Override per resident from the Resident Detail page. Three rules can be applied:" },
+      { type: "figure", src: "fig-bed-activity.png", caption: "Fig. 5.1 — Bed Activity tab: facility-wide out-of-bed rules and bedtime period." },
       { type: "ol", items: [
         "Notify if the resident has been out of bed more than N minutes.",
         "Notify if the resident is out of bed N% longer than usual.",
         "Disable.",
       ]},
       { type: "p", text: "Set the Bedtime Period by clicking the time fields. Notifications remain enabled during these hours — when residents are expected to be sleeping." },
+      { type: "figure", src: "fig-bedtime-period.png", caption: "Fig. 5.2 — Bedtime Period picker." },
     ]
   },
   {
@@ -272,6 +280,7 @@ const SECTIONS = [
       { type: "h2", text: "7.1 Zones" },
       { type: "p", text:
         "Table of every zone with Name, Description, Total / Active / Disconnected device counts and Actions (Delete — System Owner only). Create a zone via + Create Zone; Name is required, Description optional." },
+      { type: "figure", src: "fig-administration-zones.png", caption: "Fig. 7.1 — Administration → Zones." },
 
       { type: "h2", text: "7.2 Locations" },
       { type: "p", text:
@@ -280,6 +289,7 @@ const SECTIONS = [
       { type: "h2", text: "7.3 Users" },
       { type: "p", text:
         "Lists every user with Name, Access Level, Email, Status and Last Updated. Create new users via + Create User with First Name, Last Name, Email, Role and Access Level — the level's capabilities are shown below the field for clarity." },
+      { type: "figure", src: "fig-administration-users.png", caption: "Fig. 7.2 — Administration → Users." },
     ]
   },
   {
@@ -287,6 +297,7 @@ const SECTIONS = [
     blocks: [
       { type: "p", text:
         "Click the user avatar in the upper-right corner and select My Account to view and edit your profile. The editable fields are:" },
+      { type: "figure", src: "fig-my-account.png", caption: "Fig. 8.1 — My Account page showing role-level capabilities." },
       { type: "ul", items: [
         "First name (editable)",
         "Last name (editable)",
@@ -770,7 +781,61 @@ function drawBlock(doc, b) {
     case "defs":    return drawDefs(doc, b.items);
     case "callout": return drawCallout(doc, b);
     case "table":   return drawTable(doc, b);
+    case "figure":  return drawFigure(doc, b);
   }
+}
+
+// ---------------------------------------------------------------------
+// Figure: an embedded PNG screenshot with an optional caption below.
+// The image is scaled to fit CONTENT_W while preserving aspect ratio.
+// If the image + caption won't fit on the current page, we push it to
+// the next one before drawing.
+// ---------------------------------------------------------------------
+const ASSETS_DIR = path.join(__dirname, "manual-assets");
+
+function drawFigure(doc, { src, caption = "", maxWidth, maxHeight }) {
+  const abs = path.isAbsolute(src) ? src : path.join(ASSETS_DIR, src);
+  if (!fs.existsSync(abs)) {
+    console.warn(`  ⚠ missing figure: ${src}`);
+    return;
+  }
+
+  // Read real dimensions so we can size correctly.
+  const img = doc.openImage(abs);
+  const srcW = img.width;
+  const srcH = img.height;
+
+  const targetW = Math.min(maxWidth || CONTENT_W, CONTENT_W);
+  const targetH = Math.min(maxHeight || 320, CONTENT_BOTTOM - CONTENT_TOP - 60);
+  // Fit preserving aspect ratio
+  const ratio = srcW / srcH;
+  let w = targetW;
+  let h = w / ratio;
+  if (h > targetH) { h = targetH; w = h * ratio; }
+
+  // Measure caption
+  doc.fillColor(COLOR.ink500).font("Helvetica-Oblique").fontSize(8.5);
+  const captionH = caption ? doc.heightOfString(caption, { width: w, align: "center" }) : 0;
+  const total = h + (caption ? 10 + captionH : 0) + 14; // + padding
+  ensureSpace(doc, total);
+
+  const x = MARGIN.left + (CONTENT_W - w) / 2; // centre
+  const y = doc.y + 4;
+
+  // Subtle 1px frame so screenshots don't float on white
+  doc.save();
+  doc.strokeColor(COLOR.ink200).lineWidth(0.8).rect(x - 0.5, y - 0.5, w + 1, h + 1).stroke();
+  doc.restore();
+
+  doc.image(abs, x, y, { width: w, height: h });
+
+  if (caption) {
+    doc.fillColor(COLOR.ink500).font("Helvetica-Oblique").fontSize(8.5);
+    doc.text(caption, MARGIN.left, y + h + 8, { width: CONTENT_W, align: "center" });
+  }
+
+  moveTo(doc, y + h + (caption ? 10 + captionH : 0) + 10);
+  doc.fillColor(COLOR.ink700).font("Helvetica").fontSize(10.5);
 }
 
 // =====================================================================

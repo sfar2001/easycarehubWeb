@@ -27,6 +27,7 @@ yarn-error.log*
 
 # Scratch / preview
 .pdf-preview/
+.manual-screenshots/
 
 # Reference PDFs (proprietary source material — not part of the product)
 /HRT_EasyCare_Hub_Manual_A4_EN_LAY_260306_02_V4.pdf
