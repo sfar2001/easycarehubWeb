@@ -15,9 +15,9 @@ import fs from "node:fs";
 import path from "node:path";
 import Anthropic from "@anthropic-ai/sdk";
 
-const MODEL = process.env.LLM_MODEL || "claude-haiku-4-5";
+const MODEL = process.env.LLM_MODEL || "claude-sonnet-4-6";
 const MAX_TURNS = 12;
-const MAX_OUTPUT_TOKENS = 8000;
+const MAX_OUTPUT_TOKENS = 16000;
 const CLIENT_VERSION = 3;
 
 console.log(`[claude driver v${CLIENT_VERSION}] model=${MODEL}  via Anthropic direct`);

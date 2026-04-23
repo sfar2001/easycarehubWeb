@@ -24,14 +24,15 @@ in the workflow env (`TALLY_FORM_ID`).
 
 ## Model choice
 
-Default: **`claude-haiku-4-5`** — cheapest Claude that reliably handles
-tool use. Override via **Repository variable** `LLM_MODEL`:
+Default: **`claude-sonnet-4-6`** — finishes complex multi-file edits in
+fewer turns so it rarely hits the output-token cap. Override via
+**Repository variable** `LLM_MODEL`:
 
-| Model slug                | Per-feedback cost | Notes                          |
-| ------------------------- | ----------------- | ------------------------------ |
-| `claude-haiku-4-5`        | ~$0.01–0.05       | _default — recommended_        |
-| `claude-sonnet-4-6`       | ~$0.05–0.20       | Better at tricky reasoning     |
-| `claude-opus-4-7`         | ~$0.25–1.00       | Overkill for feedback triage   |
+| Model slug                | Per-feedback cost | Notes                                 |
+| ------------------------- | ----------------- | ------------------------------------- |
+| `claude-haiku-4-5`        | ~$0.01–0.05       | Cheapest, sometimes cut off mid-edit  |
+| `claude-sonnet-4-6`       | ~$0.05–0.25       | _default — best balance_              |
+| `claude-opus-4-7`         | ~$0.30–1.20       | Overkill for feedback triage          |
 
 Fund your Anthropic account once at
 <https://console.anthropic.com/settings/billing> ($5 minimum). For a
